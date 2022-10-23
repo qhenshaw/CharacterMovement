@@ -1,0 +1,19 @@
+{
+  "displayName": "Character Movement",
+  "author": "Quin Henshaw",
+  "version": "1.0.0",
+  "name": "com.qhenshaw.charactermovement",
+  "documentationUrl": "https://github.com/qhenshaw/CharacterMovement",
+  "changelogUrl": "https://github.com/qhenshaw/CharacterMovement/blob/main/CHANGELOG.md",
+  "licensesUrl": "https://github.com/qhenshaw/CharacterMovement/blob/main/LICENSE.md",
+  "description": "Character movement components for 2D and 3D projects.",
+  "unity": "2020.1",
+  "samples": 
+  [
+	{
+		"displayName": "3rd Person Demo",
+		"description": "A simple 3rd person platformer demo scene",
+		"path": "Samples~/3rdPersonDemo"
+	}
+  ]
+}
