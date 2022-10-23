@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CharacterMovement;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,12 +14,12 @@ public class PlayerController : MonoBehaviour
     // make character look in Camera direction instead of MoveDirection
     [SerializeField] private bool _lookInCameraDirection;
 
-    private CharacterMovement _characterMovement;
+    private CharacterMovementBase _characterMovement;
     private Vector2 _moveInput;
 
     private void Awake()
     {
-        _characterMovement = GetComponent<CharacterMovement>();
+        _characterMovement = GetComponent<CharacterMovementBase>();
         Cursor.lockState = _cursorMode;
     }
 
