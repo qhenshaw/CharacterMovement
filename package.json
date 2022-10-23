@@ -8,17 +8,15 @@
   "licensesUrl": "https://github.com/qhenshaw/CharacterMovement/blob/main/LICENSE.md",
   "description": "Character movement components for 2D and 3D projects.",
   "unity": "2020.1",
-  "samples": 
-  [
-	{
-		"displayName": "3rd Person Demo",
-		"description": "A simple 3rd person platformer demo scene",
-		"path": "Samples~/3rdPersonDemo",
-		"dependencies": 
-		{
-			"com.unity.cinemachine": "2.8.9",
-			"com.unity.inputsystem": "1.3.0"
-		}
-	}
+  "dependencies": {
+    "com.unity.cinemachine": "2.8.9",
+	"com.unity.inputsystem": "1.3.0"
+  },
+  "samples": [
+    {
+      "displayName": "3rd Person Demo",
+      "description": "A simple 3rd person platformer demo scene.",
+      "path": "Samples~/3rdPersonDemo"
+    }
   ]
 }
