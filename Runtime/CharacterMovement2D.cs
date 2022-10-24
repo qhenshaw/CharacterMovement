@@ -19,6 +19,7 @@ namespace CharacterMovement
 
         // private fields
         private Rigidbody2D _rigidbody;
+        private Collider2D _collider;
 
         private void Start()
         {
@@ -26,6 +27,13 @@ namespace CharacterMovement
             _rigidbody.constraints = RigidbodyConstraints2D.FreezeRotation;
             _rigidbody.interpolation = RigidbodyInterpolation2D.Interpolate;
             _rigidbody.gravityScale = 0f;
+
+            _collider = GetComponent<Collider2D>();
+            PhysicsMaterial2D material = new PhysicsMaterial2D("NoFriction")
+            {
+                friction = 0f,
+            };
+            _collider.sharedMaterial = material;
 
             LookDirection = Vector3.right;
         }
@@ -119,29 +127,38 @@ namespace CharacterMovement
             ContactFilter2D filter = new ContactFilter2D();
             filter.SetLayerMask(_groundMask);
             // raycast to find ground
-            RaycastHit2D[] hits = new RaycastHit2D[1];
+            RaycastHit2D[] hits = new RaycastHit2D[4];
+            RaycastHit2D groundHit = new RaycastHit2D();
             Physics2D.Raycast(_groundCheckStart, -transform.up, filter, hits, _groundCheckDistance);
-            RaycastHit2D firstHit = hits[0];
+            for (int i = 0; i < hits.Length; i++)
+            {
+                RaycastHit2D hit = hits[i];
+                if(hit.collider != null && hit.collider != _collider)
+                {
+                    groundHit = hit;
+                    continue;
+                }
+            }
 
             // set default ground surface normal and SurfaceVelocity
             GroundNormal = Vector3.up;
             SurfaceVelocity = Vector3.zero;
 
             // if ground wasn't hit, character is not grounded
-            if (!firstHit) return false;
+            if (groundHit.collider == null) return false;
 
             // gets velocity of surface underneath character if applicable
-            if (firstHit.rigidbody != null) SurfaceVelocity = firstHit.rigidbody.velocity;
+            if (groundHit.rigidbody != null) SurfaceVelocity = groundHit.rigidbody.velocity;
 
             // test angle between character up and ground, angles above _maxSlopeAngle are invalid
-            bool angleValid = Vector3.Angle(transform.up, firstHit.normal) < _maxSlopeAngle;
+            bool angleValid = Vector3.Angle(transform.up, groundHit.normal) < _maxSlopeAngle;
             if (angleValid)
             {
                 // record last time character was grounded and set correct floor normal direction
                 LastGroundedTime = Time.timeSinceLevelLoad;
-                GroundNormal = firstHit.normal;
+                GroundNormal = groundHit.normal;
                 LastGroundedPosition = transform.position;
-                SurfaceObject = firstHit.collider.gameObject;
+                SurfaceObject = groundHit.collider.gameObject;
                 return true;
             }
 
