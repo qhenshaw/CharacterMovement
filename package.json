@@ -32,6 +32,16 @@
       "displayName": "Top-Down Demo",
       "description": "A simple top-down demo, camera can be changed to orthographic",
       "path": "Samples~/TopDownDemo"
+    },
+	{
+      "displayName": "2D Demo",
+      "description": "A simple 2D demo.",
+      "path": "Samples~/2DDemo"
+    },
+	{
+      "displayName": "2D Hybrid Demo",
+      "description": "A 2D hybrid demo, featuring a 2D sprite character in a 3D world.",
+      "path": "Samples~/2DHybridDemo"
     }
   ]
 }
