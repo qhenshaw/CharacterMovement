@@ -27,6 +27,11 @@
       "displayName": "1st Person Demo",
       "description": "A simple 1st person demo scene.",
       "path": "Samples~/1stPersonDemo"
+    },
+	{
+      "displayName": "Top-Down Demo",
+      "description": "A simple top-down demo, camera can be changed to orthographic",
+      "path": "Samples~/TopDownDemo"
     }
   ]
 }
