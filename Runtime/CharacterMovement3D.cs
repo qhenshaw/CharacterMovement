@@ -28,9 +28,18 @@ namespace CharacterMovement
         private void Awake()
         {
             _rigidbody = GetComponent<Rigidbody>();
-            _rigidbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
+            _rigidbody.constraints = RigidbodyConstraints.FreezeRotation;
             _rigidbody.interpolation = RigidbodyInterpolation.Interpolate;
             _rigidbody.useGravity = false;
+
+            Collider collider = GetComponent<Collider>();
+            PhysicMaterial noFriction = new PhysicMaterial("NoFriction")
+            {
+                staticFriction = 0f,
+                dynamicFriction = 0f,
+                frictionCombine = PhysicMaterialCombine.Minimum
+            };
+            collider.material = noFriction;
 
             _navMeshAgent = GetComponent<NavMeshAgent>();
             _navMeshAgent.updatePosition = false;

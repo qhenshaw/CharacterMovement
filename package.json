@@ -1,7 +1,7 @@
 {
   "displayName": "Character Movement",
   "author": "Quin Henshaw",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "name": "com.qhenshaw.charactermovement",
   "documentationUrl": "https://github.com/qhenshaw/CharacterMovement",
   "changelogUrl": "https://github.com/qhenshaw/CharacterMovement/blob/main/CHANGELOG.md",
@@ -15,8 +15,13 @@
   "samples": [
     {
       "displayName": "3rd Person Demo",
-      "description": "A simple 3rd person platformer demo scene.",
+      "description": "A simple 3rd person demo scene.",
       "path": "Samples~/3rdPersonDemo"
+    },
+	{
+      "displayName": "3rd Person Demo",
+      "description": "A simple 1st person demo scene.",
+      "path": "Samples~/1stPersonDemo"
     }
   ]
 }

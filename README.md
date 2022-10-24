@@ -20,11 +20,10 @@ https://github.com/qhenshaw/CharacterMovement.git
 ```
 
 ## Usage
-Install the 3rd Person Demo sample for an example of using the CharacterMovement3D component to drive player movement using the `InputSystem` and `Cinemachine`.
+Install any of the demo samples for an example of using the `CharacterMovement` components to drive player movement using the `InputSystem` and `Cinemachine`.
 
 More sample scenes are on the way for the following movement types:
 - 2D platformer
 - 2D topdown
 - 2.5D platformer
 - 3D isometric
-- First person
