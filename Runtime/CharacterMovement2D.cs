@@ -7,9 +7,11 @@ namespace CharacterMovement
 #pragma warning disable 649
 
     [RequireComponent(typeof(Rigidbody2D))]
-    [RequireComponent(typeof(CapsuleCollider2D))]
     public class CharacterMovement2D : CharacterMovementBase
     {
+        [Header("Collider should be child for 2.5D")]
+        [SerializeField] private Collider2D _collider;
+
         [Header("Top Down")]
         [SerializeField] private bool _topDownMovement = false;
 
@@ -19,7 +21,6 @@ namespace CharacterMovement
 
         // private fields
         private Rigidbody2D _rigidbody;
-        private Collider2D _collider;
 
         private void Start()
         {
@@ -28,7 +29,7 @@ namespace CharacterMovement
             _rigidbody.interpolation = RigidbodyInterpolation2D.Interpolate;
             _rigidbody.gravityScale = 0f;
 
-            _collider = GetComponent<Collider2D>();
+            _collider = _collider ?? GetComponent<Collider2D>();
             PhysicsMaterial2D material = new PhysicsMaterial2D("NoFriction")
             {
                 friction = 0f,
@@ -106,9 +107,7 @@ namespace CharacterMovement
             // rotates character towards movement direction
             if (_controlRotation && (IsGrounded || _airTurning))
             {
-                Quaternion targetRotation = Quaternion.LookRotation(LookDirection);
-                Quaternion rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.fixedDeltaTime * _turnSpeed);
-                transform.rotation = rotation;
+                transform.rotation = Quaternion.LookRotation(LookDirection);
             }
         }
 
@@ -116,6 +115,12 @@ namespace CharacterMovement
         {
             // check for the ground every frame
             IsGrounded = CheckGrounded();
+        }
+
+        private void LateUpdate()
+        {
+            // fix capsule collider rotation
+            _collider.transform.rotation = Quaternion.identity;
         }
 
         private bool CheckGrounded()

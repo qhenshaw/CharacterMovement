@@ -1,4 +1,7 @@
 # Changelog
+[1.2.0] - 2002-10-26
+- All sample scenes are in
+
 [1.1.1] - 2022-10-24
 - Added Common Assets sample for shared assets used in other samples.
 

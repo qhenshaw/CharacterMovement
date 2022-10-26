@@ -22,8 +22,10 @@ https://github.com/qhenshaw/CharacterMovement.git
 ## Usage
 Install any of the demo samples for an example of using the `CharacterMovement` components to drive player movement using the `InputSystem` and `Cinemachine`.
 
-More sample scenes are on the way for the following movement types:
+Current samples available:
+- 1st person
+- 3rd person
+- Top-down 3D
 - 2D platformer
-- 2D topdown
-- 2.5D platformer
-- 3D isometric
+- 2.5 platformer (3D character/level with 2D physics)
+- 2D hybrid (2D character/3D level with 3D physics)

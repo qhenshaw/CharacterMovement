@@ -1,7 +1,7 @@
 {
   "displayName": "Character Movement",
   "author": "Quin Henshaw",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "name": "com.qhenshaw.charactermovement",
   "documentationUrl": "https://github.com/qhenshaw/CharacterMovement",
   "changelogUrl": "https://github.com/qhenshaw/CharacterMovement/blob/main/CHANGELOG.md",
@@ -42,6 +42,11 @@
       "displayName": "2D Hybrid Demo",
       "description": "A 2D hybrid demo, featuring a 2D sprite character in a 3D world.",
       "path": "Samples~/2DHybridDemo"
+    },
+	{
+      "displayName": "2.5D Demo",
+      "description": "A 2.5D demo, featuring a 3D character in a 3D world but using 2D physics.",
+      "path": "Samples~/2.5DDemo"
     }
   ]
 }
