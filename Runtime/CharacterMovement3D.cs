@@ -6,8 +6,6 @@ using UnityEngine.AI;
 
 namespace CharacterMovement
 {
-#pragma warning disable 649
-
     // 3D implentation 
     [RequireComponent(typeof(CapsuleCollider))]
     [RequireComponent(typeof(Rigidbody))]
@@ -19,13 +17,13 @@ namespace CharacterMovement
 
         // properties
         public float TurnSpeedMultiplier { get; set; } = 1f;
-        private Vector3 _groundCheckStart => transform.position + transform.up * _groundCheckOffset;
+        protected Vector3 _groundCheckStart => transform.position + transform.up * _groundCheckOffset;
 
         // private fields
-        private Rigidbody _rigidbody;
-        private NavMeshAgent _navMeshAgent;
+        protected Rigidbody _rigidbody;
+        protected NavMeshAgent _navMeshAgent;
 
-        private void Awake()
+        protected virtual void Awake()
         {
             _rigidbody = GetComponent<Rigidbody>();
             _rigidbody.constraints = RigidbodyConstraints.FreezeRotation;
@@ -83,7 +81,7 @@ namespace CharacterMovement
         // attempts a jump, will fail if not grounded
         public override void Jump()
         {
-            if (!CanMove || !IsFudgeGrounded || LastGroundedDistance > _fudgeJumpMaxDistance) return;
+            if (!CanMove || !CanCoyoteJump) return;
             // calculate jump velocity from jump height and gravity
             float jumpVelocity = Mathf.Sqrt(2f * -_gravity * _jumpHeight);
             // override current y velocity but maintain x/z velocity
@@ -91,26 +89,19 @@ namespace CharacterMovement
         }
 
         // path to destination using navmesh
-        public void MoveTo(Vector3 destination)
+        public virtual void MoveTo(Vector3 destination)
         {
             _navMeshAgent.SetDestination(destination);
         }
 
         // stop all movement
-        public void Stop()
+        public virtual void Stop()
         {
             _navMeshAgent.ResetPath();
             SetMoveInput(Vector3.zero);
         }
 
-        // allows character to move and rotate
-        public void SetCanMove(bool canMove)
-        {
-            CanMove = canMove;
-            if (!CanMove) Stop();
-        }
-
-        private void FixedUpdate()
+        protected virtual void FixedUpdate()
         {
             // check for the ground
             IsGrounded = CheckGrounded();
@@ -158,7 +149,7 @@ namespace CharacterMovement
             }
         }
 
-        private bool CheckGrounded()
+        protected virtual bool CheckGrounded()
         {
             // raycast to find ground
             bool hit = Physics.Raycast(_groundCheckStart, -transform.up, out RaycastHit hitInfo, _groundCheckDistance, _groundMask);
@@ -189,7 +180,7 @@ namespace CharacterMovement
             return false;
         }
 
-        private void OnDrawGizmosSelected()
+        protected virtual void OnDrawGizmosSelected()
         {
             Gizmos.color = IsGrounded ? Color.green : Color.red;
             Gizmos.DrawRay(_groundCheckStart, -transform.up * _groundCheckDistance);

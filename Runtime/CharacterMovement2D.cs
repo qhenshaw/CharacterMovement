@@ -4,25 +4,23 @@ using UnityEngine;
 
 namespace CharacterMovement
 {
-#pragma warning disable 649
-
     [RequireComponent(typeof(Rigidbody2D))]
     public class CharacterMovement2D : CharacterMovementBase
     {
         [Header("Collider should be child for 2.5D")]
-        [SerializeField] private Collider2D _collider;
+        [SerializeField] protected Collider2D _collider;
 
         [Header("Top Down")]
-        [SerializeField] private bool _topDownMovement = false;
+        [SerializeField] protected bool _topDownMovement = false;
 
         // properties
         public override Vector3 Velocity { get => _rigidbody.velocity; protected set => _rigidbody.velocity = value; }
-        private Vector3 _groundCheckStart => transform.position + transform.up * _groundCheckOffset;
+        protected Vector3 _groundCheckStart => transform.position + transform.up * _groundCheckOffset;
 
         // private fields
-        private Rigidbody2D _rigidbody;
+        protected Rigidbody2D _rigidbody;
 
-        private void Awake()
+        protected virtual void Awake()
         {
             _rigidbody = GetComponent<Rigidbody2D>();
             _rigidbody.constraints = RigidbodyConstraints2D.FreezeRotation;
@@ -67,21 +65,18 @@ namespace CharacterMovement
         // attempts a jump, will fail if not grounded
         public override void Jump()
         {
-            if (!CanMove || !IsFudgeGrounded || LastGroundedDistance > _fudgeJumpMaxDistance) return;
+            if (!CanMove || !CanCoyoteJump) return;
             // calculate jump velocity from jump height and gravity
             float jumpVelocity = Mathf.Sqrt(2f * -_gravity * _jumpHeight);
             // override current y velocity but maintain x/z velocity
             Velocity = new Vector3(Velocity.x, jumpVelocity, Velocity.z);
         }
 
-        // allows character to move and rotate
-        public void SetCanMove(bool canMove)
+        protected virtual void FixedUpdate()
         {
-            CanMove = canMove;
-        }
+            // check for the ground
+            IsGrounded = CheckGrounded();
 
-        private void FixedUpdate()
-        {
             // sends correct forward/right inputs to GetMovementAcceleration and applies result to rigidbody
             Vector3 input = MoveInput;
             Vector3 forward = Vector3.right * input.x;
@@ -109,21 +104,12 @@ namespace CharacterMovement
             {
                 transform.rotation = Quaternion.LookRotation(LookDirection);
             }
-        }
 
-        private void Update()
-        {
-            // check for the ground every frame
-            IsGrounded = CheckGrounded();
-        }
-
-        private void LateUpdate()
-        {
             // fix capsule collider rotation
             _collider.transform.rotation = Quaternion.identity;
         }
 
-        private bool CheckGrounded()
+        protected virtual bool CheckGrounded()
         {
             // ignore ground checks if top-down
             if (_topDownMovement) return true;
@@ -171,7 +157,7 @@ namespace CharacterMovement
             return false;
         }
 
-        private void OnDrawGizmosSelected()
+        protected virtual void OnDrawGizmosSelected()
         {
             Gizmos.color = IsGrounded ? Color.green : Color.red;
             Gizmos.DrawRay(_groundCheckStart, -transform.up * _groundCheckDistance);

@@ -23,14 +23,13 @@ namespace CharacterMovement
         [SerializeField] protected float _groundCheckOffset = 0.1f;         // height inside character where grounding ray starts
         [SerializeField] protected float _groundCheckDistance = 0.4f;       // distance down from offset position
         [SerializeField] protected float _maxSlopeAngle = 40f;              // maximum climbable slope, character will slip on anything higher
-        [SerializeField] protected float _groundedFudgeTime = 0.25f;        // leeway time for players to still jump after leaving the ground
-        [SerializeField] protected float _fudgeJumpMaxDistance = 0.5f;     // max distance allowed after leaving ground when doing a fudge jump
+        [SerializeField] protected float _coyoteJumpMaxDistance = 0.5f;      // max distance allowed after leaving ground when doing a coyote jump
         [SerializeField] protected LayerMask _groundMask = 1 << 0;          // mask for layers considered the ground
 
         // public properties
         public float MoveSpeedMultiplier { get; set; } = 1f;
         public float Speed => _speed;
-        public bool IsFudgeGrounded => Time.timeSinceLevelLoad < LastGroundedTime + _groundedFudgeTime;
+        public bool CanCoyoteJump => LastGroundedDistance < _coyoteJumpMaxDistance;
         public float LastGroundedDistance => Vector3.Distance(transform.position, LastGroundedPosition);
 
         // public-get protected-set properties
@@ -45,7 +44,7 @@ namespace CharacterMovement
         public bool IsGrounded { get; protected set; }
         public GameObject SurfaceObject { get; protected set; }
         public Vector3 SurfaceVelocity { get; protected set; }
-        public bool CanMove { get; protected set; } = true;
+        public bool CanMove { get; set; } = true;
         public Vector3 GroundNormal { get; protected set; } = Vector3.up;
         public float LastGroundedTime { get; protected set; }
         public Vector3 LastGroundedPosition { get; protected set; }
