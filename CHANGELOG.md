@@ -1,4 +1,8 @@
 # Changelog
+
+[1.2.1] - 2002-10-26
+- Fixed null ref in 2D platformer sample
+
 [1.2.0] - 2002-10-26
 - All sample scenes are in
 
