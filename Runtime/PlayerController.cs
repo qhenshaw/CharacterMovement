@@ -10,35 +10,35 @@ using UnityEngine.InputSystem;
 public class PlayerController : MonoBehaviour
 {
     // initial cursor state
-    [SerializeField] private CursorLockMode _cursorMode = CursorLockMode.Locked;
+    [SerializeField] protected CursorLockMode _cursorMode = CursorLockMode.Locked;
     // make character look in Camera direction instead of MoveDirection
-    [SerializeField] private bool _lookInCameraDirection;
+    [SerializeField] protected bool _lookInCameraDirection;
 
-    private CharacterMovementBase _characterMovement;
-    private Vector2 _moveInput;
+    protected CharacterMovementBase _characterMovement;
+    protected Vector2 _moveInput;
 
-    private void Awake()
+    protected virtual void Awake()
     {
         _characterMovement = GetComponent<CharacterMovementBase>();
         Cursor.lockState = _cursorMode;
     }
 
-    public void OnMove(InputValue value)
+    public virtual void OnMove(InputValue value)
     {
         _moveInput = value.Get<Vector2>();
     }
 
-    public void OnJump(InputValue value)
+    public virtual void OnJump(InputValue value)
     {
         _characterMovement?.Jump();
     }
 
-    public void OnFire(InputValue value)
+    public virtual void OnFire(InputValue value)
     {
         // placeholder for shooting stuff
     }
 
-    private void Update()
+    protected virtual void Update()
     {
         if (_characterMovement == null) return;
 
