@@ -1,56 +1,57 @@
-﻿using CharacterMovement;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-#pragma warning disable 649
 
-// sends input from PlayerInput to attached CharacterMovement components
-public class PlayerController : MonoBehaviour
+namespace CharacterMovement
 {
-    // initial cursor state
-    [SerializeField] protected CursorLockMode _cursorMode = CursorLockMode.Locked;
-    // make character look in Camera direction instead of MoveDirection
-    [SerializeField] protected bool _lookInCameraDirection;
-
-    protected CharacterMovementBase _characterMovement;
-    protected Vector2 _moveInput;
-
-    protected virtual void Awake()
+    // sends input from PlayerInput to attached CharacterMovement components
+    public class PlayerController : MonoBehaviour
     {
-        _characterMovement = GetComponent<CharacterMovementBase>();
-        Cursor.lockState = _cursorMode;
-    }
+        // initial cursor state
+        [SerializeField] protected CursorLockMode _cursorMode = CursorLockMode.Locked;
+        // make character look in Camera direction instead of MoveDirection
+        [SerializeField] protected bool _lookInCameraDirection;
 
-    public virtual void OnMove(InputValue value)
-    {
-        _moveInput = value.Get<Vector2>();
-    }
+        protected CharacterMovementBase _characterMovement;
+        protected Vector2 _moveInput;
 
-    public virtual void OnJump(InputValue value)
-    {
-        _characterMovement?.Jump();
-    }
+        protected virtual void Awake()
+        {
+            _characterMovement = GetComponent<CharacterMovementBase>();
+            Cursor.lockState = _cursorMode;
+        }
 
-    public virtual void OnFire(InputValue value)
-    {
-        // placeholder for shooting stuff
-    }
+        public virtual void OnMove(InputValue value)
+        {
+            _moveInput = value.Get<Vector2>();
+        }
 
-    protected virtual void Update()
-    {
-        if (_characterMovement == null) return;
+        public virtual void OnJump(InputValue value)
+        {
+            _characterMovement?.Jump();
+        }
 
-        // find correct right/forward directions based on main camera rotation
-        Vector3 up = Vector3.up;
-        Vector3 right = Camera.main.transform.right;
-        Vector3 forward = Vector3.Cross(right, up);
-        Vector3 moveInput = forward * _moveInput.y + right * _moveInput.x;
+        public virtual void OnFire(InputValue value)
+        {
+            // placeholder for shooting stuff
+        }
 
-        // send player input to character movement
-        _characterMovement.SetMoveInput(moveInput);
-        _characterMovement.SetLookDirection(moveInput);
-        if (_lookInCameraDirection) _characterMovement.SetLookDirection(Camera.main.transform.forward);
+        protected virtual void Update()
+        {
+            if (_characterMovement == null) return;
+
+            // find correct right/forward directions based on main camera rotation
+            Vector3 up = Vector3.up;
+            Vector3 right = Camera.main.transform.right;
+            Vector3 forward = Vector3.Cross(right, up);
+            Vector3 moveInput = forward * _moveInput.y + right * _moveInput.x;
+
+            // send player input to character movement
+            _characterMovement.SetMoveInput(moveInput);
+            _characterMovement.SetLookDirection(moveInput);
+            if (_lookInCameraDirection) _characterMovement.SetLookDirection(Camera.main.transform.forward);
+        }
     }
 }
