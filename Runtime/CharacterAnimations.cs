@@ -7,18 +7,18 @@ namespace CharacterMovement
     public class CharacterAnimations : MonoBehaviour
     {
         // damping time smooths rapidly changing values sent to animator
-        [SerializeField] private float _dampTime = 0.1f;
+        [SerializeField] protected float _dampTime = 0.1f;
 
-        private Animator _animator;
-        private CharacterMovementBase _characterMovement;
+        protected Animator _animator;
+        protected CharacterMovementBase _characterMovement;
 
-        private void Start()
+        protected virtual void Awake()
         {
             _animator = GetComponent<Animator>();
             _characterMovement = GetComponentInParent<CharacterMovementBase>();
         }
 
-        private void Update()
+        protected virtual void Update()
         {
             // send velocity to animator, ignoring y-velocity
             Vector3 velocity = _characterMovement.Velocity;
