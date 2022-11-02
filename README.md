@@ -8,7 +8,7 @@ Character Movement is a set of `Rigidbody` based movement components. It support
 - moving floors/platforms (characters match speed with velocity of rigidbody floor surfaces)
 - navigation using `NavMeshAgent` to find paths
 - max slope angle for standing/moving
-- "coyote time" allows for junping just after leaving platforms
+- "coyote time" allows for jumping just after leaving platforms
 
 ## System Requirements
 Unity 2021.1+. Will likely work on earlier versions but this is the version I tested with.
