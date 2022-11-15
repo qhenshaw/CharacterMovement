@@ -1,5 +1,8 @@
 # Changelog
 
+[1.5.0] - 2022-11-15
+- Added Footstep/Grounded UnityEvents
+
 [1.4.0] - 2022-11-11
 - Added MovingPlatform component
 - Adding example moving platforms to sample scenes
