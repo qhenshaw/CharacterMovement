@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace CharacterMovement
 {
@@ -25,6 +26,10 @@ namespace CharacterMovement
         [SerializeField] protected float _maxSlopeAngle = 40f;              // maximum climbable slope, character will slip on anything higher
         [SerializeField] protected float _coyoteJumpMaxDistance = 0.5f;      // max distance allowed after leaving ground when doing a coyote jump
         [SerializeField] protected LayerMask _groundMask = 1 << 0;          // mask for layers considered the ground
+
+        [Header("Events")]
+        public UnityEvent<GameObject> OnGrounded;
+        public UnityEvent<GameObject> OnFootstep;
 
         // public properties
         public float MoveSpeedMultiplier { get; set; } = 1f;
@@ -53,5 +58,9 @@ namespace CharacterMovement
         public virtual void Jump() { }
         public virtual void SetMoveInput(Vector3 input) { }
         public virtual void SetLookDirection(Vector3 direction) { }
+        public virtual void FootstepAnimEvent(AnimationEvent animationEvent)
+        {
+            if (animationEvent.animatorClipInfo.weight > 0.5f && IsGrounded && NormalizedSpeed > 0.05f) OnFootstep.Invoke(SurfaceObject);
+        }
     }
 }

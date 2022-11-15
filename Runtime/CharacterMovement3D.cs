@@ -180,6 +180,17 @@ namespace CharacterMovement
             return false;
         }
 
+        // check for landing on the ground
+        private void OnCollisionEnter(Collision collision)
+        {
+            float landingCollisionMaxDistance = 0.25f;
+            Vector3 point = collision.contacts[0].point;
+            if(Vector3.Distance(point, transform.position) < landingCollisionMaxDistance)
+            {
+                OnGrounded.Invoke(collision.gameObject);
+            }
+        }
+
         protected virtual void OnDrawGizmosSelected()
         {
             Gizmos.color = IsGrounded ? Color.green : Color.red;
