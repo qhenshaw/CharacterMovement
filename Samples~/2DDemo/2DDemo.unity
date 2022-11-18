@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028352, g: 0.22571376, b: 0.3069224, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -97,8 +97,10 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 0}
-  m_LightingSettings: {fileID: 0}
+  m_LightingDataAsset: {fileID: 112000000, guid: 9e83731e05fa5d545a240db5df2c1ecf,
+    type: 2}
+  m_LightingSettings: {fileID: 4890085278179872738, guid: ea5c679c533b3584ab0340a109c7bbf5,
+    type: 2}
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -728,11 +730,17 @@ MonoBehaviour:
   _groundCheckOffset: 0.1
   _groundCheckDistance: 0.4
   _maxSlopeAngle: 40
-  _groundedFudgeTime: 0.25
-  _fudgeJumpMaxDistance: 0.5
+  _coyoteJumpMaxDistance: 0.5
   _groundMask:
     serializedVersion: 2
     m_Bits: 1
+  OnGrounded:
+    m_PersistentCalls:
+      m_Calls: []
+  OnFootstep:
+    m_PersistentCalls:
+      m_Calls: []
+  _collider: {fileID: 0}
   _topDownMovement: 0
 --- !u!70 &1108365324
 CapsuleCollider2D:
@@ -797,7 +805,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Actions: {fileID: -944628639613478452, guid: 4d7befdf0657797489e35ddbec012035,
+  m_Actions: {fileID: -944628639613478452, guid: b08515bf45aab3b43a07d8f90e71c9eb,
     type: 3}
   m_NotificationBehavior: 0
   m_UIInputModule: {fileID: 0}
@@ -1041,7 +1049,7 @@ MonoBehaviour:
   priority: 0
   blendDistance: 0
   weight: 1
-  sharedProfile: {fileID: 11400000, guid: 8e27fd212c7633c45a9a22eb0b799376, type: 2}
+  sharedProfile: {fileID: 11400000, guid: 8676d2d2ed527ae478c267f6ff5be5d5, type: 2}
 --- !u!4 &1745935439
 Transform:
   m_ObjectHideFlags: 0
