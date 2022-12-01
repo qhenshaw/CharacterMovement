@@ -1,7 +1,7 @@
 {
   "displayName": "Character Movement",
   "author": "Quin Henshaw",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "name": "com.qhenshaw.charactermovement",
   "documentationUrl": "https://github.com/qhenshaw/CharacterMovement",
   "changelogUrl": "https://github.com/qhenshaw/CharacterMovement/blob/main/CHANGELOG.md",
@@ -9,8 +9,8 @@
   "description": "Character movement components for 2D and 3D projects.",
   "unity": "2020.1",
   "dependencies": {
-    "com.unity.cinemachine": "2.8.9",
-	"com.unity.inputsystem": "1.3.0"
+    "com.unity.cinemachine": "2.x.x",
+	"com.unity.inputsystem": "1.x.x"
   },
   "samples": [
     {
