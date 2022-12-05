@@ -139,13 +139,16 @@ namespace CharacterMovement
             acceleration += GroundNormal * _gravity;
 
             _rigidbody.AddForce(acceleration);
+        }
 
+        protected virtual void Update()
+        {
             // rotates character towards movement direction
             if (_controlRotation && HasTurnInput && (IsGrounded || _airTurning))
             {
                 Quaternion targetRotation = Quaternion.LookRotation(LookDirection);
-                Quaternion rotation = Quaternion.Slerp(transform.rotation, targetRotation, _turnSpeed * TurnSpeedMultiplier * Time.fixedDeltaTime);
-                _rigidbody.MoveRotation(rotation);
+                Quaternion rotation = Quaternion.Slerp(transform.rotation, targetRotation, _turnSpeed * TurnSpeedMultiplier * Time.deltaTime);
+                _rigidbody.rotation = rotation;
             }
         }
 
