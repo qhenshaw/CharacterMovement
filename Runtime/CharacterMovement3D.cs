@@ -148,7 +148,7 @@ namespace CharacterMovement
             {
                 Quaternion targetRotation = Quaternion.LookRotation(LookDirection);
                 Quaternion rotation = Quaternion.Slerp(transform.rotation, targetRotation, _turnSpeed * TurnSpeedMultiplier * Time.deltaTime);
-                _rigidbody.rotation = rotation;
+                transform.rotation = rotation;
             }
         }
 
