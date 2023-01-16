@@ -139,10 +139,7 @@ namespace CharacterMovement
             acceleration += GroundNormal * _gravity;
 
             _rigidbody.AddForce(acceleration);
-        }
 
-        protected virtual void Update()
-        {
             // rotates character towards movement direction
             if (_controlRotation && HasTurnInput && (IsGrounded || _airTurning))
             {
