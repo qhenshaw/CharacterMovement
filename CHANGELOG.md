@@ -1,5 +1,11 @@
 # Changelog
 
+[2.0.7] - 2023-02-25
+- added stopping distance
+- removed runtime set of rigidbody configuration
+- switched navmeshagent sync to nextPosition (warp was resetting the path in 2021.3.19f1)
+- added rigidbody mass to acceleration calculation
+
 [1.5.0] - 2022-11-15
 - Added Footstep/Grounded UnityEvents
 
