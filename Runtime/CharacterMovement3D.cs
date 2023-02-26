@@ -26,9 +26,6 @@ namespace CharacterMovement
         protected virtual void Awake()
         {
             _rigidbody = GetComponent<Rigidbody>();
-            _rigidbody.constraints = RigidbodyConstraints.FreezeRotation;
-            _rigidbody.interpolation = RigidbodyInterpolation.Interpolate;
-            _rigidbody.useGravity = false;
 
             Collider collider = GetComponent<Collider>();
             PhysicMaterial noFriction = new PhysicMaterial("NoFriction")
@@ -113,10 +110,16 @@ namespace CharacterMovement
                 Vector3 pathDir = (nextPathPoint - transform.position).normalized;
                 SetMoveInput(pathDir);
                 SetLookDirection(pathDir);
+
+                // stop off destination reached
+                if (_stoppingDistance > 0f && Vector3.Distance(_navMeshAgent.destination, transform.position) < _stoppingDistance)
+                {
+                    Stop();
+                }
             }
 
             // syncs navmeshagent position with character position
-            _navMeshAgent.Warp(transform.position);
+            _navMeshAgent.nextPosition = transform.position;
 
             // find flattened movement vector based on ground normal
             Vector3 input = MoveInput;
@@ -138,7 +141,7 @@ namespace CharacterMovement
             // add gravity
             acceleration += GroundNormal * _gravity;
 
-            _rigidbody.AddForce(acceleration);
+            _rigidbody.AddForce(acceleration * _rigidbody.mass);
 
             // rotates character towards movement direction
             if (_controlRotation && HasTurnInput && (IsGrounded || _airTurning))
@@ -195,6 +198,12 @@ namespace CharacterMovement
         {
             Gizmos.color = IsGrounded ? Color.green : Color.red;
             Gizmos.DrawRay(_groundCheckStart, -transform.up * _groundCheckDistance);
+
+            if(_navMeshAgent != null && _navMeshAgent.hasPath)
+            {
+                Gizmos.color = Color.magenta;
+                Gizmos.DrawLine(transform.position, _navMeshAgent.destination);
+            }
         }
     }
 }
