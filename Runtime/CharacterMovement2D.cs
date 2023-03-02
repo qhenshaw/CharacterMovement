@@ -23,9 +23,6 @@ namespace CharacterMovement
         protected virtual void Awake()
         {
             _rigidbody = GetComponent<Rigidbody2D>();
-            _rigidbody.constraints = RigidbodyConstraints2D.FreezeRotation;
-            _rigidbody.interpolation = RigidbodyInterpolation2D.Interpolate;
-            _rigidbody.gravityScale = 0f;
 
             _collider = _collider != null ? _collider : GetComponent<Collider2D>();
             PhysicsMaterial2D material = new PhysicsMaterial2D("NoFriction")

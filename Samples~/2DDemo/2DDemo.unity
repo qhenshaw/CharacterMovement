@@ -97,10 +97,8 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 112000000, guid: 9e83731e05fa5d545a240db5df2c1ecf,
-    type: 2}
-  m_LightingSettings: {fileID: 4890085278179872738, guid: ea5c679c533b3584ab0340a109c7bbf5,
-    type: 2}
+  m_LightingDataAsset: {fileID: 112000000, guid: 9e83731e05fa5d545a240db5df2c1ecf, type: 2}
+  m_LightingSettings: {fileID: 4890085278179872738, guid: ea5c679c533b3584ab0340a109c7bbf5, type: 2}
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -722,6 +720,7 @@ MonoBehaviour:
   _speed: 5
   _acceleration: 10
   _turnSpeed: 10
+  _stoppingDistance: 0.25
   _controlRotation: 0
   _gravity: -20
   _jumpHeight: 2.25
@@ -773,12 +772,12 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!114 &1108365326
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -805,8 +804,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Actions: {fileID: -944628639613478452, guid: b08515bf45aab3b43a07d8f90e71c9eb,
-    type: 3}
+  m_Actions: {fileID: -944628639613478452, guid: b08515bf45aab3b43a07d8f90e71c9eb, type: 3}
   m_NotificationBehavior: 0
   m_UIInputModule: {fileID: 0}
   m_DeviceLostEvent:
@@ -851,7 +849,7 @@ MonoBehaviour:
   _dampTime: 0.1
 --- !u!95 &1108365330
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -868,7 +866,7 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
 --- !u!1 &1416397267
 GameObject:
   m_ObjectHideFlags: 0

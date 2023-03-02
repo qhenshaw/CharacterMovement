@@ -1,5 +1,9 @@
 # Changelog
 
+[2.08] - 2023-3-01
+- removed runtime set of rigidbody2D configuration
+- fixed manual configuration of rigidbodies in example scenes
+
 [2.0.7] - 2023-02-25
 - added stopping distance
 - removed runtime set of rigidbody configuration
