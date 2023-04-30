@@ -1,6 +1,9 @@
 # Changelog
 
-[2.08] - 2023-3-01
+[2.1.0] - 2023-3-01
+- added cinemachine sensitivity component
+
+[2.0.8] - 2023-3-01
 - removed runtime set of rigidbody2D configuration
 - fixed manual configuration of rigidbodies in example scenes
 
