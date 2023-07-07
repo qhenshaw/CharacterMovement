@@ -14,6 +14,7 @@ namespace CharacterMovement
         [SerializeField] protected float _turnSpeed = 10f;
         [SerializeField] protected float _stoppingDistance = 0.25f;
         [SerializeField] protected bool _controlRotation = true;    // character turns towards movement direction
+        [SerializeField] protected bool _parentToSurface = false;
 
         [Header("Airborne")]
         [SerializeField] protected float _gravity = -20f;       // custom gravity value

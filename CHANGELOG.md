@@ -1,5 +1,8 @@
 # Changelog
 
+[2.1.1] - 2023-7-07
+- reduced moving platform jitter
+
 [2.1.0] - 2023-3-01
 - added cinemachine sensitivity component
 

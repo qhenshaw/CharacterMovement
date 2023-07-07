@@ -147,10 +147,12 @@ namespace CharacterMovement
                 GroundNormal = groundHit.normal;
                 LastGroundedPosition = transform.position;
                 SurfaceObject = groundHit.collider.gameObject;
+                if (_parentToSurface) transform.SetParent(SurfaceObject.transform);
                 return true;
             }
 
             SurfaceObject = null;
+            if (_parentToSurface) transform.SetParent(null);
             return false;
         }
 

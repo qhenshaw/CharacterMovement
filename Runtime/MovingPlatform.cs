@@ -19,39 +19,9 @@ namespace CharacterMovement
         // moves to next point within distance
         [SerializeField] private float _pointReachedDistance = 0.05f;
         // slows movement within distance
-        [SerializeField] private float _easingDistance = 0.5f;
+        [SerializeField] private float _easingDistance = 1f;
         [SerializeField] private PhysicsMode _physicsMode;
 
-        // gets/sets velocity on appropriate rigidbody component
-        public Vector3 Velocity
-        {
-            get
-            {
-                switch (_physicsMode)
-                {
-                    case PhysicsMode.Physics3D:
-                        return _rb3D.velocity;
-                    case PhysicsMode.Physics2D:
-                        return _rb2D.velocity;
-                    default:
-                        return Vector3.zero;
-
-                }
-            }
-
-            set
-            {
-                switch (_physicsMode)
-                {
-                    case PhysicsMode.Physics3D:
-                        _rb3D.velocity = value;
-                        break;
-                    case PhysicsMode.Physics2D:
-                        _rb2D.velocity = value;
-                        break;
-                }
-            }
-        }
         public Vector3 NextPoint => _startPosition + _points[_pointIndex % _points.Length];
         public Vector3 PreviousPoint => _startPosition + _points[(_pointIndex + _points.Length - 1) % _points.Length];
 
@@ -69,25 +39,19 @@ namespace CharacterMovement
                 case PhysicsMode.Physics3D:
                     _rb3D = GetComponent<Rigidbody>();
                     if (_rb3D == null) _rb3D = gameObject.AddComponent<Rigidbody>();
-                    _rb3D.mass = 1000f;
-                    _rb3D.freezeRotation = true;
-                    _rb3D.useGravity = false;
+                    _rb3D.isKinematic = true;
                     _rb3D.interpolation = RigidbodyInterpolation.Interpolate;
                     break;
                 case PhysicsMode.Physics2D:
                     _rb2D = GetComponent<Rigidbody2D>();
                     if (_rb2D == null) _rb2D = gameObject.AddComponent<Rigidbody2D>();
-                    _rb2D.mass = 1000f;
-                    _rb2D.freezeRotation = true;
-                    _rb2D.gravityScale = 0f;
+                    _rb2D.isKinematic = true;
                     _rb2D.interpolation = RigidbodyInterpolation2D.Interpolate;
-                    break;
-                default:
                     break;
             }
         }
 
-        private void Update()
+        private void FixedUpdate()
         {
             // checks if point is reached
             float distance = Vector3.Distance(transform.position, NextPoint);
@@ -100,7 +64,18 @@ namespace CharacterMovement
             float nextEasing = distance / _easingDistance;
             float easing = Mathf.Min(previousEasing, nextEasing);
             easing = Mathf.Clamp(easing, 0.01f, 1f);
-            Velocity = dir * _speed * easing;
+            Vector3 velocity = dir * _speed * easing;
+
+            // move according to physics mode
+            switch (_physicsMode)
+            {
+                case PhysicsMode.Physics3D:
+                    _rb3D.MovePosition(transform.position + velocity * Time.fixedDeltaTime);
+                    break;
+                case PhysicsMode.Physics2D:
+                    _rb2D.velocity = velocity;
+                    break;
+            }
         }
 
         private void OnDrawGizmosSelected()
