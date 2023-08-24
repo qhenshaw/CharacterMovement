@@ -64,6 +64,7 @@ namespace CharacterMovement
         public virtual void Jump() { }
         public virtual void SetMoveInput(Vector3 input) { }
         public virtual void SetLookDirection(Vector3 direction) { }
+        public virtual void SetLookPosition(Vector3 position) { }
         public virtual void FootstepAnimEvent(AnimationEvent animationEvent)
         {
             if (animationEvent.animatorClipInfo.weight > 0.5f && IsGrounded && NormalizedSpeed > 0.05f) OnFootstep.Invoke(SurfaceObject);

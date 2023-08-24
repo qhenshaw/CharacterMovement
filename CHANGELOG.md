@@ -1,5 +1,8 @@
 # Changelog
 
+[2.3.0] - 2023-8-24
+- added SetLookPosition to movement
+
 [2.2.1] - 2023-8-24
 - added height/radius properties to movement
 - added more auto-configuration of components in OnValidate

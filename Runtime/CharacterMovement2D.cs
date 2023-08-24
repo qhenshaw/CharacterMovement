@@ -72,6 +72,12 @@ namespace CharacterMovement
             LookDirection = new Vector3(direction.x, 0f, direction.z).normalized;
         }
 
+        public override void SetLookPosition(Vector3 position)
+        {
+            Vector3 direction = Vector3.ClampMagnitude(position - transform.position, 1f);
+            SetLookDirection(direction);
+        }
+
         // attempts a jump, will fail if not grounded
         public override void Jump()
         {
