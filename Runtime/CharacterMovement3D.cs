@@ -35,12 +35,9 @@ namespace CharacterMovement
             _rigidbody.useGravity = false;
 
             _navMeshAgent = GetComponent<NavMeshAgent>();
-            _navMeshAgent.updatePosition = false;
-            _navMeshAgent.updateRotation = false;
             _navMeshAgent.height = _height;
             _navMeshAgent.radius = _radius;
 
-            _capsuleCollider.material = new PhysicMaterial("NoFriction") { staticFriction = 0f, dynamicFriction = 0f, frictionCombine = PhysicMaterialCombine.Minimum };
             _capsuleCollider.height = _height;
             _capsuleCollider.center = new Vector3(0f, _height * 0.5f, 0f);
             _capsuleCollider.radius = _radius;
@@ -48,6 +45,10 @@ namespace CharacterMovement
 
         protected virtual void Awake()
         {
+            _capsuleCollider.material = new PhysicMaterial("NoFriction") { staticFriction = 0f, dynamicFriction = 0f, frictionCombine = PhysicMaterialCombine.Minimum };
+            _navMeshAgent.updatePosition = false;
+            _navMeshAgent.updateRotation = false;
+
             LookDirection = transform.forward;
         }
 

@@ -28,16 +28,14 @@ namespace CharacterMovement
             _rigidbody.freezeRotation = true;
 
             if (_collider == null) _collider = GetComponentInChildren<CapsuleCollider2D>();
-            ConfigureCollider();
+            if (_collider != null)
+            {
+                _collider.size = new Vector2(_radius, _height);
+                _collider.offset = new Vector2(0f, _height * 0.5f);
+            }
         }
 
         protected virtual void Awake()
-        {
-            ConfigureCollider();
-            LookDirection = Vector3.right;
-        }
-
-        private void ConfigureCollider()
         {
             if (_collider != null)
             {
@@ -45,6 +43,8 @@ namespace CharacterMovement
                 _collider.size = new Vector2(_radius, _height);
                 _collider.offset = new Vector2(0f, _height * 0.5f);
             }
+
+            LookDirection = Vector3.right;
         }
 
         // receives movement input and clamps it to prevent over-acceleration
