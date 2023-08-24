@@ -22,6 +22,10 @@ namespace CharacterMovement
         [SerializeField] protected float _airControl = 0.1f;    // percentage of acceleration applied while airborne
         [SerializeField] protected bool _airTurning = true;     // character can turn while airborne
 
+        [Header("Size")]
+        [SerializeField] protected float _height = 2f;
+        [SerializeField] protected float _radius = 0.3f;
+
         [Header("Grounding")]
         [SerializeField] protected float _groundCheckOffset = 0.1f;         // height inside character where grounding ray starts
         [SerializeField] protected float _groundCheckDistance = 0.4f;       // distance down from offset position

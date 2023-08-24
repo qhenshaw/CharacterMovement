@@ -1,5 +1,9 @@
 # Changelog
 
+[2.2.1] - 2023-8-24
+- added height/radius properties to movement
+- added more auto-configuration of components in OnValidate
+
 [2.1.1] - 2023-7-07
 - reduced moving platform jitter
 

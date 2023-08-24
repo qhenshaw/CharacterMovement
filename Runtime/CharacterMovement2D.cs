@@ -8,7 +8,7 @@ namespace CharacterMovement
     public class CharacterMovement2D : CharacterMovementBase
     {
         [Header("Collider should be child for 2.5D")]
-        [SerializeField] protected Collider2D _collider;
+        [SerializeField] protected CapsuleCollider2D _collider;
 
         [Header("Top Down")]
         [SerializeField] protected bool _topDownMovement = false;
@@ -18,20 +18,33 @@ namespace CharacterMovement
         protected Vector3 _groundCheckStart => transform.position + transform.up * _groundCheckOffset;
 
         // private fields
-        protected Rigidbody2D _rigidbody;
+        [Header("Components")]
+        [SerializeField] protected Rigidbody2D _rigidbody;
+
+        protected virtual void OnValidate()
+        {
+            if (_rigidbody == null) _rigidbody = GetComponent<Rigidbody2D>();
+            _rigidbody.gravityScale = 0f;
+            _rigidbody.freezeRotation = true;
+
+            if (_collider == null) _collider = GetComponentInChildren<CapsuleCollider2D>();
+            ConfigureCollider();
+        }
 
         protected virtual void Awake()
         {
-            _rigidbody = GetComponent<Rigidbody2D>();
-
-            _collider = _collider != null ? _collider : GetComponent<Collider2D>();
-            PhysicsMaterial2D material = new PhysicsMaterial2D("NoFriction")
-            {
-                friction = 0f,
-            };
-            _collider.sharedMaterial = material;
-
+            ConfigureCollider();
             LookDirection = Vector3.right;
+        }
+
+        private void ConfigureCollider()
+        {
+            if (_collider != null)
+            {
+                _collider.sharedMaterial = new PhysicsMaterial2D("NoFriction") { friction = 0f, bounciness = 0f };
+                _collider.size = new Vector2(_radius, _height);
+                _collider.offset = new Vector2(0f, _height * 0.5f);
+            }
         }
 
         // receives movement input and clamps it to prevent over-acceleration

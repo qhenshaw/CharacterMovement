@@ -20,26 +20,34 @@ namespace CharacterMovement
         protected Vector3 _groundCheckStart => transform.position + transform.up * _groundCheckOffset;
 
         // private fields
-        protected Rigidbody _rigidbody;
-        protected NavMeshAgent _navMeshAgent;
+        [Header("Components")]
+        [SerializeField] protected Rigidbody _rigidbody;
+        [SerializeField] protected NavMeshAgent _navMeshAgent;
+        [SerializeField] protected CapsuleCollider _capsuleCollider;
 
-        protected virtual void Awake()
+        protected virtual void OnValidate()
         {
-            _rigidbody = GetComponent<Rigidbody>();
+            if(_rigidbody == null) _rigidbody = GetComponent<Rigidbody>();
+            if(_navMeshAgent == null) _navMeshAgent = GetComponent<NavMeshAgent>();
+            if(_capsuleCollider == null) _capsuleCollider = GetComponent<CapsuleCollider>();
 
-            Collider collider = GetComponent<Collider>();
-            PhysicMaterial noFriction = new PhysicMaterial("NoFriction")
-            {
-                staticFriction = 0f,
-                dynamicFriction = 0f,
-                frictionCombine = PhysicMaterialCombine.Minimum
-            };
-            collider.material = noFriction;
+            _rigidbody.freezeRotation = true;
+            _rigidbody.useGravity = false;
 
             _navMeshAgent = GetComponent<NavMeshAgent>();
             _navMeshAgent.updatePosition = false;
             _navMeshAgent.updateRotation = false;
+            _navMeshAgent.height = _height;
+            _navMeshAgent.radius = _radius;
 
+            _capsuleCollider.material = new PhysicMaterial("NoFriction") { staticFriction = 0f, dynamicFriction = 0f, frictionCombine = PhysicMaterialCombine.Minimum };
+            _capsuleCollider.height = _height;
+            _capsuleCollider.center = new Vector3(0f, _height * 0.5f, 0f);
+            _capsuleCollider.radius = _radius;
+        }
+
+        protected virtual void Awake()
+        {
             LookDirection = transform.forward;
         }
 
