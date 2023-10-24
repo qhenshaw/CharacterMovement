@@ -146,7 +146,7 @@ namespace CharacterMovement
                 // override direction if avoidance is enabled
                 if(_enableAvoidance) pathDir = GetAvoidanceDirection(nextPathPoint);
                 SetMoveInput(pathDir);
-                SetLookDirection(pathDir);
+                if(_lookInMoveDirection) SetLookDirection(pathDir);
 
                 // stop off destination reached
                 if (_stoppingDistance > 0f && Vector3.Distance(_navMeshAgent.destination, transform.position) < _stoppingDistance)
