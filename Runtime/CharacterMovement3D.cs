@@ -17,9 +17,13 @@ namespace CharacterMovement
         [Header("Avoidance")]
         [SerializeField] protected bool _enableAvoidance = false;
         [SerializeField, Range(0f, 1f)] protected float _speedVariation = 0.5f;
-        [SerializeField] protected float _neighborDistance = 2f;
+        [SerializeField] protected float _neighborDistance = 3f;
+        [SerializeField] protected float _cornerNeighborDistance = 1f;
         [SerializeField] protected LayerMask _neighborMask;
         [SerializeField] protected int _maxNeighbors = 8;
+        [SerializeField] protected bool _clampToNavMesh = true;
+        [SerializeField] private float _clampLookAheadTime = 0.25f;
+        [SerializeField] private float _clampSearchRadius = 1f;
         protected float _variationNoiseOffset;
         protected Collider[] _neighborHits;
 
@@ -144,7 +148,20 @@ namespace CharacterMovement
                 Vector3 nextPathPoint = _navMeshAgent.path.corners[1];
                 Vector3 pathDir = (nextPathPoint - transform.position).normalized;
                 // override direction if avoidance is enabled
-                if(_enableAvoidance) pathDir = GetAvoidanceDirection(nextPathPoint);
+                if(_enableAvoidance)
+                {
+                    float neighborDistance = _neighborDistance;
+                    if (_navMeshAgent.path.corners.Length > 2) neighborDistance = _cornerNeighborDistance;
+                    pathDir = GetAvoidanceDirection(nextPathPoint, neighborDistance);
+
+                    if (_clampToNavMesh)
+                    {
+                        Vector3 pathPoint = transform.position + pathDir * _speed * _clampLookAheadTime;
+                        Vector3 clampedPathPoint = ClampToNavMesh(pathPoint, _clampSearchRadius);
+                        Debug.DrawLine(transform.position, pathPoint, Color.magenta);
+                        pathDir = (clampedPathPoint - transform.position).normalized;
+                    }
+                }
                 SetMoveInput(pathDir);
                 if(_lookInMoveDirection) SetLookDirection(pathDir);
 
@@ -231,7 +248,7 @@ namespace CharacterMovement
         }
 
         // gets move direction adjusted to avoid neighbors
-        protected Vector3 GetAvoidanceDirection(Vector3 destination)
+        protected Vector3 GetAvoidanceDirection(Vector3 destination, float neighborDistance)
         {
             Vector3 position = transform.position;
 
@@ -239,14 +256,14 @@ namespace CharacterMovement
             Vector3 alignment = transform.forward;
             Vector3 cohesion = destination;
 
-            int hitCount = Physics.OverlapSphereNonAlloc(position, _neighborDistance, _neighborHits, _neighborMask);
+            int hitCount = Physics.OverlapSphereNonAlloc(position, neighborDistance, _neighborHits, _neighborMask);
             int neighborCount = 0;
             for (int i = 0; i < hitCount; i++)
             {
                 GameObject neighbor = _neighborHits[i].gameObject;
                 if (neighbor == gameObject) continue;
                 neighborCount++;
-                separation += GetSeparationVector(neighbor.transform);
+                separation += GetSeparationVector(neighbor.transform, neighborDistance);
                 alignment += neighbor.transform.forward;
                 cohesion += neighbor.transform.position;
             }
@@ -261,12 +278,22 @@ namespace CharacterMovement
         }
 
         // calculates separation strength/direction from neigbor
-        Vector3 GetSeparationVector(Transform target)
+        private Vector3 GetSeparationVector(Transform target, float neighborDistance)
         {
             Vector3 diff = transform.position - target.transform.position;
             float diffLen = diff.magnitude;
-            float scaler = Mathf.Clamp01(1.0f - diffLen / _neighborDistance);
+            float scaler = Mathf.Clamp01(1.0f - diffLen / neighborDistance);
             return diff * (scaler / diffLen);
+        }
+
+        protected Vector3 ClampToNavMesh(Vector3 position, float searchRadius)
+        {
+            if(NavMesh.SamplePosition(position, out NavMeshHit hit, searchRadius, NavMesh.AllAreas))
+            {
+                return hit.position;
+            }
+
+            return position;
         }
 
         // check for landing on the ground
@@ -284,12 +311,6 @@ namespace CharacterMovement
         {
             Gizmos.color = IsGrounded ? Color.green : Color.red;
             Gizmos.DrawRay(_groundCheckStart, -transform.up * _groundCheckDistance);
-
-            if(_navMeshAgent != null && _navMeshAgent.hasPath)
-            {
-                Gizmos.color = Color.magenta;
-                Gizmos.DrawLine(transform.position, _navMeshAgent.destination);
-            }
 
             if(_enableAvoidance)
             {
