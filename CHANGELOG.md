@@ -1,5 +1,8 @@
 # Changelog
 
+[2.4.0] - 2023-10-25
+- added experimental local avoidance for 3D character movement
+
 [2.3.0] - 2023-8-24
 - added SetLookPosition to movement
 

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using Random = UnityEngine.Random;
 
 namespace CharacterMovement
 {
@@ -12,6 +13,20 @@ namespace CharacterMovement
     [RequireComponent(typeof(NavMeshAgent))]
     public class CharacterMovement3D : CharacterMovementBase
     {
+        // all avoidance fields
+        [Header("Avoidance")]
+        [SerializeField] protected bool _enableAvoidance = false;
+        [SerializeField, Range(0f, 1f)] protected float _speedVariation = 0.5f;
+        [SerializeField] protected float _neighborDistance = 3f;
+        [SerializeField] protected float _cornerNeighborDistance = 1f;
+        [SerializeField] protected LayerMask _neighborMask;
+        [SerializeField] protected int _maxNeighbors = 8;
+        [SerializeField] protected bool _clampToNavMesh = true;
+        [SerializeField] private float _clampLookAheadTime = 0.25f;
+        [SerializeField] private float _clampSearchRadius = 1f;
+        protected float _variationNoiseOffset;
+        protected Collider[] _neighborHits;
+
         // public-read private-set properties
         public override Vector3 Velocity { get => _rigidbody.velocity; protected set => _rigidbody.velocity = value; }
 
@@ -38,6 +53,7 @@ namespace CharacterMovement
             _navMeshAgent.height = _height;
             _navMeshAgent.radius = _radius;
 
+            // adjust capsule height/radius based on fields
             _capsuleCollider.height = _height;
             _capsuleCollider.center = new Vector3(0f, _height * 0.5f, 0f);
             _capsuleCollider.radius = _radius;
@@ -45,11 +61,19 @@ namespace CharacterMovement
 
         protected virtual void Awake()
         {
+            // assign frictionless physic material
             _capsuleCollider.material = new PhysicMaterial("NoFriction") { staticFriction = 0f, dynamicFriction = 0f, frictionCombine = PhysicMaterialCombine.Minimum };
+
+            // disable NavMeshAgent movement
             _navMeshAgent.updatePosition = false;
             _navMeshAgent.updateRotation = false;
 
+            // match look direction to current facing
             LookDirection = transform.forward;
+
+            // set up avoidance values
+            _neighborHits = new Collider[_maxNeighbors];
+            _variationNoiseOffset = Random.value * 10f;
         }
 
         public override void SetMoveInput(Vector3 input)
@@ -123,8 +147,23 @@ namespace CharacterMovement
             {
                 Vector3 nextPathPoint = _navMeshAgent.path.corners[1];
                 Vector3 pathDir = (nextPathPoint - transform.position).normalized;
+                // override direction if avoidance is enabled
+                if(_enableAvoidance)
+                {
+                    float neighborDistance = _neighborDistance;
+                    if (_navMeshAgent.path.corners.Length > 2) neighborDistance = _cornerNeighborDistance;
+                    pathDir = GetAvoidanceDirection(nextPathPoint, neighborDistance);
+
+                    if (_clampToNavMesh)
+                    {
+                        Vector3 pathPoint = transform.position + pathDir * _speed * _clampLookAheadTime;
+                        Vector3 clampedPathPoint = ClampToNavMesh(pathPoint, _clampSearchRadius);
+                        Debug.DrawLine(transform.position, pathPoint, Color.magenta);
+                        pathDir = (clampedPathPoint - transform.position).normalized;
+                    }
+                }
                 SetMoveInput(pathDir);
-                SetLookDirection(pathDir);
+                if(_lookInMoveDirection) SetLookDirection(pathDir);
 
                 // stop off destination reached
                 if (_stoppingDistance > 0f && Vector3.Distance(_navMeshAgent.destination, transform.position) < _stoppingDistance)
@@ -141,8 +180,16 @@ namespace CharacterMovement
             Vector3 right = Vector3.Cross(transform.up, input);
             Vector3 forward = Vector3.Cross(right, GroundNormal);
 
+            // vary character speed when using avoidance
+            float speed = _speed;
+            if(_enableAvoidance)
+            {
+                float noise = Mathf.PerlinNoise(Time.time, _variationNoiseOffset) * 2f - 1f;
+                speed = _speed * (1f + noise * _speedVariation);
+            }
+
             // calculates desirection movement velocity
-            Vector3 targetVelocity = forward * (_speed * MoveSpeedMultiplier);
+            Vector3 targetVelocity = forward * (speed * MoveSpeedMultiplier);
             if (!CanMove) targetVelocity = Vector3.zero;
             // adds velocity of surface under character, if character is stationary
             targetVelocity += SurfaceVelocity * (1f - Mathf.Abs(MoveInput.magnitude));
@@ -200,8 +247,57 @@ namespace CharacterMovement
             return false;
         }
 
+        // gets move direction adjusted to avoid neighbors
+        protected Vector3 GetAvoidanceDirection(Vector3 destination, float neighborDistance)
+        {
+            Vector3 position = transform.position;
+
+            Vector3 separation = Vector3.zero;
+            Vector3 alignment = transform.forward;
+            Vector3 cohesion = destination;
+
+            int hitCount = Physics.OverlapSphereNonAlloc(position, neighborDistance, _neighborHits, _neighborMask);
+            int neighborCount = 0;
+            for (int i = 0; i < hitCount; i++)
+            {
+                GameObject neighbor = _neighborHits[i].gameObject;
+                if (neighbor == gameObject) continue;
+                neighborCount++;
+                separation += GetSeparationVector(neighbor.transform, neighborDistance);
+                alignment += neighbor.transform.forward;
+                cohesion += neighbor.transform.position;
+            }
+
+            float average = 1f / (neighborCount + 1);
+            alignment *= average;
+            cohesion *= average;
+            cohesion = (cohesion - position).normalized;
+
+            Vector3 direction = separation + alignment + cohesion;
+            return Vector3.ClampMagnitude(direction, 1f);
+        }
+
+        // calculates separation strength/direction from neigbor
+        private Vector3 GetSeparationVector(Transform target, float neighborDistance)
+        {
+            Vector3 diff = transform.position - target.transform.position;
+            float diffLen = diff.magnitude;
+            float scaler = Mathf.Clamp01(1.0f - diffLen / neighborDistance);
+            return diff * (scaler / diffLen);
+        }
+
+        protected Vector3 ClampToNavMesh(Vector3 position, float searchRadius)
+        {
+            if(NavMesh.SamplePosition(position, out NavMeshHit hit, searchRadius, NavMesh.AllAreas))
+            {
+                return hit.position;
+            }
+
+            return position;
+        }
+
         // check for landing on the ground
-        private void OnCollisionEnter(Collision collision)
+        protected virtual void OnCollisionEnter(Collision collision)
         {
             float landingCollisionMaxDistance = 0.25f;
             Vector3 point = collision.contacts[0].point;
@@ -216,10 +312,10 @@ namespace CharacterMovement
             Gizmos.color = IsGrounded ? Color.green : Color.red;
             Gizmos.DrawRay(_groundCheckStart, -transform.up * _groundCheckDistance);
 
-            if(_navMeshAgent != null && _navMeshAgent.hasPath)
+            if(_enableAvoidance)
             {
-                Gizmos.color = Color.magenta;
-                Gizmos.DrawLine(transform.position, _navMeshAgent.destination);
+                Gizmos.color = Color.yellow;
+                Gizmos.DrawWireSphere(transform.position, _neighborDistance);
             }
         }
     }

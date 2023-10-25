@@ -13,6 +13,7 @@ namespace CharacterMovement
         [SerializeField] protected float _acceleration = 10f;
         [SerializeField] protected float _turnSpeed = 10f;
         [SerializeField] protected float _stoppingDistance = 0.25f;
+        [SerializeField] protected bool _lookInMoveDirection = true;
         [SerializeField] protected bool _controlRotation = true;    // character turns towards movement direction
         [SerializeField] protected bool _parentToSurface = false;
 
