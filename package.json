@@ -1,7 +1,7 @@
 {
   "displayName": "Character Movement",
   "author": "Quin Henshaw",
-  "version": "2.4.0",
+  "version": "2.4.1",
   "name": "com.qhenshaw.charactermovement",
   "documentationUrl": "https://github.com/qhenshaw/CharacterMovement",
   "changelogUrl": "https://github.com/qhenshaw/CharacterMovement/blob/main/CHANGELOG.md",

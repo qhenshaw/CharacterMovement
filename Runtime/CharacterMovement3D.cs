@@ -48,6 +48,7 @@ namespace CharacterMovement
 
             _rigidbody.freezeRotation = true;
             _rigidbody.useGravity = false;
+            _rigidbody.interpolation = RigidbodyInterpolation.Interpolate;
 
             _navMeshAgent = GetComponent<NavMeshAgent>();
             _navMeshAgent.height = _height;
@@ -204,13 +205,16 @@ namespace CharacterMovement
             acceleration += GroundNormal * _gravity;
 
             _rigidbody.AddForce(acceleration * _rigidbody.mass);
+        }
 
+        protected virtual void Update()
+        {
             // rotates character towards movement direction
             if (_controlRotation && HasTurnInput && (IsGrounded || _airTurning))
             {
                 Quaternion targetRotation = Quaternion.LookRotation(LookDirection);
                 Quaternion rotation = Quaternion.Slerp(transform.rotation, targetRotation, _turnSpeed * TurnSpeedMultiplier * Time.deltaTime);
-                transform.rotation = rotation;
+                _rigidbody.MoveRotation(rotation);
             }
         }
 
