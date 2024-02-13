@@ -128,14 +128,16 @@ namespace CharacterMovement
         // path to destination using navmesh
         public virtual void MoveTo(Vector3 destination)
         {
+            if (!_navMeshAgent.isActiveAndEnabled || !_navMeshAgent.isOnNavMesh) return;
             _navMeshAgent.SetDestination(destination);
         }
 
         // stop all movement
         public virtual void Stop()
         {
-            _navMeshAgent.ResetPath();
             SetMoveInput(Vector3.zero);
+            if (!_navMeshAgent.isActiveAndEnabled || !_navMeshAgent.isOnNavMesh) return;
+            _navMeshAgent.ResetPath();
         }
 
         protected virtual void FixedUpdate()
