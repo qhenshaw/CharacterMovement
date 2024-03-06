@@ -22,8 +22,8 @@ namespace CharacterMovement
         [SerializeField] protected LayerMask _neighborMask;
         [SerializeField] protected int _maxNeighbors = 8;
         [SerializeField] protected bool _clampToNavMesh = true;
-        [SerializeField] private float _clampLookAheadTime = 0.25f;
-        [SerializeField] private float _clampSearchRadius = 1f;
+        [SerializeField] protected float _clampLookAheadTime = 0.25f;
+        [SerializeField] protected float _clampSearchRadius = 1f;
         protected float _variationNoiseOffset;
         protected Collider[] _neighborHits;
 
