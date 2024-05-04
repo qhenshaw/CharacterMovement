@@ -216,6 +216,12 @@ namespace CharacterMovement
             {
                 Quaternion targetRotation = Quaternion.LookRotation(LookDirection);
                 Quaternion rotation = Quaternion.Slerp(transform.rotation, targetRotation, _turnSpeed * TurnSpeedMultiplier * Time.deltaTime);
+                // rotate sprite character properly
+                if (_fix3DSpriteRotation)
+                {
+                    float spriteAngle = LookDirection.x > 0 ? 0f : 180f;
+                    rotation = Quaternion.Euler(0f, spriteAngle, 0f);
+                }
                 _rigidbody.MoveRotation(rotation);
             }
         }

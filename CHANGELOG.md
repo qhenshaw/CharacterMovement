@@ -1,5 +1,8 @@
 # Changelog
 
+[2.4.4] - 2024-05-04
+- added toggle to fix sprite shaders no longer flipping
+
 [2.4.1] - 2023-11-16
 - fixed rotation interpolation issues
 
