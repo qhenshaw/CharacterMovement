@@ -68,7 +68,7 @@ namespace CharacterMovement
         // sets character look direction, flattening y-value
         public override void SetLookDirection(Vector3 direction)
         {
-            if (!CanMove || direction.magnitude < 0.1f) return;
+            if (!CanTurn || direction.magnitude < 0.1f) return;
             LookDirection = new Vector3(direction.x, 0f, direction.z).normalized;
         }
 

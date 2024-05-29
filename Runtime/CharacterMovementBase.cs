@@ -58,6 +58,7 @@ namespace CharacterMovement
         public GameObject SurfaceObject { get; protected set; }
         public Vector3 SurfaceVelocity { get; protected set; }
         public bool CanMove { get; set; } = true;
+        public bool CanTurn { get; set; } = true;
         public Vector3 GroundNormal { get; protected set; } = Vector3.up;
         public float LastGroundedTime { get; protected set; }
         public Vector3 LastGroundedPosition { get; protected set; }
