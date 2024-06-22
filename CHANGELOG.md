@@ -1,6 +1,10 @@
 # Changelog
 
-[2.4.4] - 2024-05-29
+[3.0.0] - 2024-06-21
+- switched all fields to properties, many with public sets
+- fixed issues with 2D hybrid (2D sprite + 3d movement) characters not turning correctly
+
+[2.4.5] - 2024-05-29
 - added CanTurn alongside CanMove
 
 [2.4.4] - 2024-05-04
