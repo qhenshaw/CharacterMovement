@@ -10,27 +10,33 @@ namespace CharacterMovement
     public class PlayerController : MonoBehaviour
     {
         // initial cursor state
-        [SerializeField] protected CursorLockMode _cursorMode = CursorLockMode.Locked;
+        [field: SerializeField] protected CursorLockMode CursorMode { get; set; } = CursorLockMode.Locked;
         // make character look in Camera direction instead of MoveDirection
-        [SerializeField] protected bool _lookInCameraDirection;
+        [field: SerializeField] protected bool LookInCameraDirection { get; set; }
 
-        protected CharacterMovementBase _characterMovement;
-        protected Vector2 _moveInput;
+        [field: Header("Componenents")]
+        [field: SerializeField] protected CharacterMovementBase Movement { get; set; }
+
+        protected Vector2 MoveInput { get; set; }
+
+        protected virtual void OnValidate()
+        {
+            if(Movement == null) Movement = GetComponent<CharacterMovementBase>();
+        }
 
         protected virtual void Awake()
         {
-            _characterMovement = GetComponent<CharacterMovementBase>();
-            Cursor.lockState = _cursorMode;
+            Cursor.lockState = CursorMode;
         }
 
         public virtual void OnMove(InputValue value)
         {
-            _moveInput = value.Get<Vector2>();
+            MoveInput = value.Get<Vector2>();
         }
 
         public virtual void OnJump(InputValue value)
         {
-            _characterMovement?.Jump();
+            Movement?.Jump();
         }
 
         public virtual void OnFire(InputValue value)
@@ -40,18 +46,18 @@ namespace CharacterMovement
 
         protected virtual void Update()
         {
-            if (_characterMovement == null) return;
+            if (Movement == null) return;
 
             // find correct right/forward directions based on main camera rotation
             Vector3 up = Vector3.up;
             Vector3 right = Camera.main.transform.right;
             Vector3 forward = Vector3.Cross(right, up);
-            Vector3 moveInput = forward * _moveInput.y + right * _moveInput.x;
+            Vector3 moveInput = forward * MoveInput.y + right * MoveInput.x;
 
             // send player input to character movement
-            _characterMovement.SetMoveInput(moveInput);
-            _characterMovement.SetLookDirection(moveInput);
-            if (_lookInCameraDirection) _characterMovement.SetLookDirection(Camera.main.transform.forward);
+            Movement.SetMoveInput(moveInput);
+            Movement.SetLookDirection(moveInput);
+            if (LookInCameraDirection) Movement.SetLookDirection(Camera.main.transform.forward);
         }
     }
 }

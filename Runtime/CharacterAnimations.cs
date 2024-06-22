@@ -7,28 +7,29 @@ namespace CharacterMovement
     public class CharacterAnimations : MonoBehaviour
     {
         // damping time smooths rapidly changing values sent to animator
-        [SerializeField] protected float _dampTime = 0.1f;
+        [field: SerializeField] protected float DampTime { get; set; } = 0.1f;
 
-        protected Animator _animator;
-        protected CharacterMovementBase _characterMovement;
+        [field: Header("Components")]
+        [field: SerializeField] protected Animator Animator { get; set; }
+        [field: SerializeField] protected CharacterMovementBase CharacterMovement { get; set; }
 
-        protected virtual void Awake()
+        protected virtual void OnValidate()
         {
-            _animator = GetComponent<Animator>();
-            _characterMovement = GetComponentInParent<CharacterMovementBase>();
+            if (Animator == null) Animator = GetComponent<Animator>();
+            if (CharacterMovement == null) CharacterMovement = GetComponent<CharacterMovementBase>();
         }
 
         protected virtual void Update()
         {
             // send velocity to animator, ignoring y-velocity
-            Vector3 velocity = _characterMovement.Velocity;
+            Vector3 velocity = CharacterMovement.Velocity;
             Vector3 flattenedVelocity = new Vector3(velocity.x, 0f, velocity.z);
-            float speed = Mathf.Min(_characterMovement.MoveInput.magnitude, flattenedVelocity.magnitude / _characterMovement.Speed);
-            _animator.SetFloat("Speed", speed, _dampTime, Time.deltaTime);
+            float speed = Mathf.Min(CharacterMovement.MoveInput.magnitude, flattenedVelocity.magnitude / CharacterMovement.Speed);
+            Animator.SetFloat("Speed", speed, DampTime, Time.deltaTime);
             // send grounded state
-            _animator.SetBool("IsGrounded", _characterMovement.IsGrounded);
+            Animator.SetBool("IsGrounded", CharacterMovement.IsGrounded);
             // send isolated y-velocity
-            _animator.SetFloat("VerticalVelocity", velocity.y);
+            Animator.SetFloat("VerticalVelocity", velocity.y);
         }
     }
 }

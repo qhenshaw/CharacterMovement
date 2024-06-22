@@ -7,41 +7,37 @@ namespace CharacterMovement
     [RequireComponent(typeof(Rigidbody2D))]
     public class CharacterMovement2D : CharacterMovementBase
     {
-        [Header("Collider should be child for 2.5D")]
-        [SerializeField] protected CapsuleCollider2D _collider;
-
         [Header("Top Down")]
-        [SerializeField] protected bool _topDownMovement = false;
+        [field: SerializeField] protected bool TopDownMovement = false;
 
-        // properties
-        public override Vector3 Velocity { get => _rigidbody.velocity; protected set => _rigidbody.velocity = value; }
-        protected Vector3 _groundCheckStart => transform.position + transform.up * _groundCheckOffset;
-
-        // private fields
         [Header("Components")]
-        [SerializeField] protected Rigidbody2D _rigidbody;
+        [field: SerializeField] protected Rigidbody2D Rigidbody;
+        [field: SerializeField] protected CapsuleCollider2D CapsuleCollider;
+
+        public override Vector3 Velocity { get => Rigidbody.velocity; protected set => Rigidbody.velocity = value; }
+        protected Vector3 GroundCheckStart => transform.position + transform.up * GroundCheckOffset;
 
         protected virtual void OnValidate()
         {
-            if (_rigidbody == null) _rigidbody = GetComponent<Rigidbody2D>();
-            _rigidbody.gravityScale = 0f;
-            _rigidbody.freezeRotation = true;
+            if (Rigidbody == null) Rigidbody = GetComponent<Rigidbody2D>();
+            Rigidbody.gravityScale = 0f;
+            Rigidbody.freezeRotation = true;
 
-            if (_collider == null) _collider = GetComponentInChildren<CapsuleCollider2D>();
-            if (_collider != null)
+            if (CapsuleCollider == null) CapsuleCollider = GetComponentInChildren<CapsuleCollider2D>();
+            if (CapsuleCollider != null)
             {
-                _collider.size = new Vector2(_radius, _height);
-                _collider.offset = new Vector2(0f, _height * 0.5f);
+                CapsuleCollider.size = new Vector2(Radius, Height);
+                CapsuleCollider.offset = new Vector2(0f, Height * 0.5f);
             }
         }
 
         protected virtual void Awake()
         {
-            if (_collider != null)
+            if (CapsuleCollider != null)
             {
-                _collider.sharedMaterial = new PhysicsMaterial2D("NoFriction") { friction = 0f, bounciness = 0f };
-                _collider.size = new Vector2(_radius, _height);
-                _collider.offset = new Vector2(0f, _height * 0.5f);
+                CapsuleCollider.sharedMaterial = new PhysicsMaterial2D("NoFriction") { friction = 0f, bounciness = 0f };
+                CapsuleCollider.size = new Vector2(Radius, Height);
+                CapsuleCollider.offset = new Vector2(0f, Height * 0.5f);
             }
 
             LookDirection = Vector3.right;
@@ -83,7 +79,7 @@ namespace CharacterMovement
         {
             if (!CanMove || !CanCoyoteJump) return;
             // calculate jump velocity from jump height and gravity
-            float jumpVelocity = Mathf.Sqrt(2f * -_gravity * _jumpHeight);
+            float jumpVelocity = Mathf.Sqrt(2f * -Gravity * JumpHeight);
             // override current y velocity but maintain x/z velocity
             Velocity = new Vector3(Velocity.x, jumpVelocity, Velocity.z);
         }
@@ -96,51 +92,51 @@ namespace CharacterMovement
             // sends correct forward/right inputs to GetMovementAcceleration and applies result to rigidbody
             Vector3 input = MoveInput;
             Vector3 forward = Vector3.right * input.x;
-            if (_topDownMovement) forward = new Vector3(MoveInput.x, MoveInput.z, 0f);
+            if (TopDownMovement) forward = new Vector3(MoveInput.x, MoveInput.z, 0f);
 
             // calculates desirection movement velocity
-            Vector3 targetVelocity = forward * (_speed * MoveSpeedMultiplier);
+            Vector3 targetVelocity = forward * (Speed * MoveSpeedMultiplier);
             if (!CanMove) targetVelocity = Vector3.zero;
             // adds velocity of surface under character, if character is stationary
             targetVelocity += SurfaceVelocity * (1f - Mathf.Abs(MoveInput.magnitude));
             // calculates acceleration required to reach desired velocity and applies air control if not grounded
             Vector3 velocityDiff = targetVelocity - Velocity;
-            if (!_topDownMovement) velocityDiff.y = 0f;
-            float control = IsGrounded ? 1f : _airControl;
-            Vector3 acceleration = velocityDiff * (_acceleration * control);
+            if (!TopDownMovement) velocityDiff.y = 0f;
+            float control = IsGrounded ? 1f : AirControl;
+            Vector3 acceleration = velocityDiff * (Acceleration * control);
             // zeros acceleration if airborne and not trying to move (allows for nice jumping arcs)
             if (!IsGrounded && !HasMoveInput) acceleration = Vector3.zero;
             // add gravity
-            acceleration += GroundNormal * _gravity;
+            acceleration += GroundNormal * Gravity;
 
-            _rigidbody.AddForce(acceleration);
+            Rigidbody.AddForce(acceleration);
 
             // rotates character towards movement direction
-            if (_controlRotation && (IsGrounded || _airTurning))
+            if (ControlRotation && (IsGrounded || AirTurning))
             {
                 transform.rotation = Quaternion.LookRotation(LookDirection);
             }
 
             // fix capsule collider rotation
-            _collider.transform.rotation = Quaternion.identity;
+            CapsuleCollider.transform.rotation = Quaternion.identity;
         }
 
         protected virtual bool CheckGrounded()
         {
             // ignore ground checks if top-down
-            if (_topDownMovement) return true;
+            if (TopDownMovement) return true;
 
             // configure layer mask for 2D raycast
             ContactFilter2D filter = new ContactFilter2D();
-            filter.SetLayerMask(_groundMask);
+            filter.SetLayerMask(GroundMask);
             // raycast to find ground
             RaycastHit2D[] hits = new RaycastHit2D[4];
             RaycastHit2D groundHit = new RaycastHit2D();
-            Physics2D.Raycast(_groundCheckStart, -transform.up, filter, hits, _groundCheckDistance);
+            Physics2D.Raycast(GroundCheckStart, -transform.up, filter, hits, GroundCheckDistance);
             for (int i = 0; i < hits.Length; i++)
             {
                 RaycastHit2D hit = hits[i];
-                if(hit.collider != null && hit.collider != _collider)
+                if(hit.collider != null && hit.collider != CapsuleCollider)
                 {
                     groundHit = hit;
                     continue;
@@ -158,7 +154,7 @@ namespace CharacterMovement
             if (groundHit.rigidbody != null) SurfaceVelocity = groundHit.rigidbody.velocity;
 
             // test angle between character up and ground, angles above _maxSlopeAngle are invalid
-            bool angleValid = Vector3.Angle(transform.up, groundHit.normal) < _maxSlopeAngle;
+            bool angleValid = Vector3.Angle(transform.up, groundHit.normal) < MaxSlopeAngle;
             if (angleValid)
             {
                 // record last time character was grounded and set correct floor normal direction
@@ -166,12 +162,12 @@ namespace CharacterMovement
                 GroundNormal = groundHit.normal;
                 LastGroundedPosition = transform.position;
                 SurfaceObject = groundHit.collider.gameObject;
-                if (_parentToSurface) transform.SetParent(SurfaceObject.transform);
+                if (ParentToSurface) transform.SetParent(SurfaceObject.transform);
                 return true;
             }
 
             SurfaceObject = null;
-            if (_parentToSurface) transform.SetParent(null);
+            if (ParentToSurface) transform.SetParent(null);
             return false;
         }
 
@@ -189,7 +185,7 @@ namespace CharacterMovement
         protected virtual void OnDrawGizmosSelected()
         {
             Gizmos.color = IsGrounded ? Color.green : Color.red;
-            Gizmos.DrawRay(_groundCheckStart, -transform.up * _groundCheckDistance);
+            Gizmos.DrawRay(GroundCheckStart, -transform.up * GroundCheckDistance);
         }
     }
 }

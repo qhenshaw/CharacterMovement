@@ -8,41 +8,40 @@ namespace CharacterMovement
     public abstract class CharacterMovementBase : MonoBehaviour
     {
         // private serialized fields
-        [Header("Movement")]
-        [SerializeField] protected float _speed = 5f;
-        [SerializeField] protected float _acceleration = 10f;
-        [SerializeField] protected float _turnSpeed = 10f;
-        [SerializeField] protected float _stoppingDistance = 0.25f;
-        [SerializeField] protected bool _lookInMoveDirection = true;
-        [SerializeField] protected bool _controlRotation = true;    // character turns towards movement direction
-        [SerializeField] protected bool _fix3DSpriteRotation = false;
-        [SerializeField] protected bool _parentToSurface = false;
+        [field: Header("Movement")]
+        [field: SerializeField] public float Speed { get; set; } = 5f;
+        [field: SerializeField] public float Acceleration { get; set; } = 10f;
+        [field: SerializeField] public float TurnSpeed { get; set; } = 15f;
+        [field: SerializeField] public float StoppingDistance { get; set; } = 0.25f;
+        [field: SerializeField] public bool LookInMoveDirection { get; set; } = true;
+        [field: SerializeField] public bool ControlRotation { get; set; } = true;       // character turns towards movement direction
+        [field: SerializeField] public bool Fix3DSpriteRotation { get; set; } = false;
+        [field: SerializeField] public bool ParentToSurface { get; set; } = false;
 
-        [Header("Airborne")]
-        [SerializeField] protected float _gravity = -20f;       // custom gravity value
-        [SerializeField] protected float _jumpHeight = 2.25f;   // peak height of jump
-        [SerializeField] protected float _airControl = 0.1f;    // percentage of acceleration applied while airborne
-        [SerializeField] protected bool _airTurning = true;     // character can turn while airborne
+        [field: Header("Airborne")]
+        [field: SerializeField] public float Gravity { get; set; } = -20f;             // custom gravity value
+        [field: SerializeField] public float JumpHeight { get; set; } = 2.25f;         // peak height of jump
+        [field: SerializeField] public float AirControl { get; set; } = 0.1f;          // percentage of acceleration applied while airborne
+        [field: SerializeField] public bool AirTurning { get; set; } = true;           // character can turn while airborne
 
-        [Header("Size")]
-        [SerializeField] protected float _height = 2f;
-        [SerializeField] protected float _radius = 0.3f;
+        [field: Header("Size")]
+        [field: SerializeField] public float Height { get; protected set; } = 1.8f;
+        [field: SerializeField] public float Radius { get; protected set; } = 0.3f;
 
-        [Header("Grounding")]
-        [SerializeField] protected float _groundCheckOffset = 0.1f;         // height inside character where grounding ray starts
-        [SerializeField] protected float _groundCheckDistance = 0.4f;       // distance down from offset position
-        [SerializeField] protected float _maxSlopeAngle = 40f;              // maximum climbable slope, character will slip on anything higher
-        [SerializeField] protected float _coyoteJumpMaxDistance = 0.5f;      // max distance allowed after leaving ground when doing a coyote jump
-        [SerializeField] protected LayerMask _groundMask = 1 << 0;          // mask for layers considered the ground
+        [field: Header("Grounding")]
+        [field: SerializeField] protected float GroundCheckOffset { get; set; } = 0.1f;         // height inside character where grounding ray starts
+        [field: SerializeField] protected float GroundCheckDistance { get; set; } = 0.4f;       // distance down from offset position
+        [field: SerializeField] protected float MaxSlopeAngle { get; set; } = 40f;              // maximum climbable slope, character will slip on anything higher
+        [field: SerializeField] protected float CoyoteMaxJumpDistance { get; set; } = 0.5f;     // max distance allowed after leaving ground when doing a coyote jump
+        [field: SerializeField] protected LayerMask GroundMask { get; set; } = 1 << 0;          // mask for layers considered the ground
 
-        [Header("Events")]
+        [field: Header("Events")]
         public UnityEvent<GameObject> OnGrounded;
         public UnityEvent<GameObject> OnFootstep;
 
         // public properties
         public float MoveSpeedMultiplier { get; set; } = 1f;
-        public float Speed => _speed;
-        public bool CanCoyoteJump => LastGroundedDistance < _coyoteJumpMaxDistance;
+        public bool CanCoyoteJump => LastGroundedDistance < CoyoteMaxJumpDistance;
         public float LastGroundedDistance => Vector3.Distance(transform.position, LastGroundedPosition);
 
         // public-get protected-set properties

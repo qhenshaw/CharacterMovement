@@ -4,22 +4,21 @@ using UnityEngine;
 
 namespace CharacterMovement
 {
-    [RequireComponent(typeof(CharacterMovementBase))]
     public class CharacterSpriteFlipper : MonoBehaviour
     {
-        private CharacterMovementBase _movement;
-        private SpriteRenderer _renderer;
+        [field: SerializeField] private CharacterMovementBase Movement { get; set; }
+        [field: SerializeField] private SpriteRenderer SpriteRenderer { get; set; }
 
-        private void Start()
+        private void OnValidate()
         {
-            _movement = GetComponent<CharacterMovementBase>();
-            _renderer = GetComponent<SpriteRenderer>();
+            if(Movement == null) Movement = GetComponent<CharacterMovementBase>();
+            if(SpriteRenderer == null) SpriteRenderer = GetComponent<SpriteRenderer>();
         }
 
         private void Update()
         {
-            if (!_movement.HasMoveInput) return;
-            _renderer.flipX = _movement.MoveInput.x < 0f;
+            if (!Movement.HasMoveInput) return;
+            SpriteRenderer.flipX = Movement.MoveInput.x < 0f;
         }
     }
 }
