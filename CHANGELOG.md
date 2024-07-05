@@ -1,5 +1,8 @@
 # Changelog
 
+[3.0.0] - 2024-07-05
+- fixed missing headers on new properties
+
 [3.0.0] - 2024-06-21
 - switched all fields to properties, many with public sets
 - fixed issues with 2D hybrid (2D sprite + 3d movement) characters not turning correctly

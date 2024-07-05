@@ -7,10 +7,10 @@ namespace CharacterMovement
     [RequireComponent(typeof(Rigidbody2D))]
     public class CharacterMovement2D : CharacterMovementBase
     {
-        [Header("Top Down")]
+        [field: Header("Top Down")]
         [field: SerializeField] protected bool TopDownMovement = false;
 
-        [Header("Components")]
+        [field: Header("Components")]
         [field: SerializeField] protected Rigidbody2D Rigidbody;
         [field: SerializeField] protected CapsuleCollider2D CapsuleCollider;
 

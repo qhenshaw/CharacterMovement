@@ -14,7 +14,7 @@ namespace CharacterMovement
     public class CharacterMovement3D : CharacterMovementBase
     {
         // all avoidance fields
-        [Header("Avoidance")]
+        [field: Header("Avoidance")]
         [field: SerializeField] protected bool EnableAvoidance { get; set; } = false;
         [field: SerializeField, Range(0f, 1f)] protected float SpeedVariation { get; set; } = 0.5f;
         [field: SerializeField] protected float NeighborDistance { get; set; } = 3f;
@@ -27,7 +27,7 @@ namespace CharacterMovement
         protected float _variationNoiseOffset;
         protected Collider[] _neighborHits;
 
-        [Header("Components")]
+        [field: Header("Components")]
         [field: SerializeField] protected Rigidbody Rigidbody { get; set; }
         [field: SerializeField] protected NavMeshAgent NavMeshAgent { get; set; }
         [field: SerializeField] protected CapsuleCollider CapsuleCollider { get; set; }
