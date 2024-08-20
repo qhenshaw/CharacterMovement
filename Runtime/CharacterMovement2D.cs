@@ -75,9 +75,14 @@ namespace CharacterMovement
         }
 
         // attempts a jump, will fail if not grounded
-        public override void Jump()
+        public override void TryJump()
         {
             if (!CanMove || !CanCoyoteJump) return;
+            Jump();
+        }
+
+        public override void Jump()
+        {
             // calculate jump velocity from jump height and gravity
             float jumpVelocity = Mathf.Sqrt(2f * -Gravity * JumpHeight);
             // override current y velocity but maintain x/z velocity
@@ -176,6 +181,7 @@ namespace CharacterMovement
         {
             float landingCollisionMaxDistance = 0.25f;
             Vector3 point = collision.contacts[0].point;
+            if (Mathf.Abs(collision.relativeVelocity.y) < MinGroundedVelocity) return;
             if (Vector3.Distance(point, transform.position) < landingCollisionMaxDistance)
             {
                 OnGrounded.Invoke(collision.gameObject);

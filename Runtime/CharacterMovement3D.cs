@@ -13,6 +13,12 @@ namespace CharacterMovement
     [RequireComponent(typeof(NavMeshAgent))]
     public class CharacterMovement3D : CharacterMovementBase
     {
+        // step height fields
+        [field: Header("Step Height")]
+        [field: SerializeField] protected float StepHeight { get; set; } = 0.3f;
+        [field: SerializeField] protected float StepHeightAllowance { get; set; } = 0.1f;
+        [field: SerializeField] protected float StepHeightForwardOffset { get; set; } = 0.05f;
+
         // all avoidance fields
         [field: Header("Avoidance")]
         [field: SerializeField] protected bool EnableAvoidance { get; set; } = false;
@@ -113,9 +119,14 @@ namespace CharacterMovement
         }
 
         // attempts a jump, will fail if not grounded
-        public override void Jump()
+        public override void TryJump()
         {
             if (!CanMove || !CanCoyoteJump) return;
+            Jump();
+        }
+
+        public void Jump()
+        {
             // calculate jump velocity from jump height and gravity
             float jumpVelocity = Mathf.Sqrt(2f * -Gravity * JumpHeight);
             // override current y velocity but maintain x/z velocity
@@ -204,6 +215,8 @@ namespace CharacterMovement
             acceleration += GroundNormal * Gravity;
 
             Rigidbody.AddForce(acceleration * Rigidbody.mass);
+
+            StepCheck();
         }
 
         protected virtual void Update()
@@ -257,6 +270,30 @@ namespace CharacterMovement
             SurfaceObject = null;
             if(ParentToSurface) transform.SetParent(null);
             return false;
+        }
+
+        // check for step in front of player and bump up to that height
+        protected void StepCheck()
+        {
+            if(!IsGrounded) return;
+
+            Vector3 moveInputRight = Vector3.Cross(transform.up, MoveInput.normalized);
+            Vector3 groundNormalForward = Vector3.Cross(-GroundNormal, moveInputRight);
+            Ray blockingRay = new Ray(transform.position + transform.up * StepHeightAllowance, groundNormalForward);
+            float blockingDistance = Radius + StepHeightForwardOffset;
+            bool blockingHit = Physics.Raycast(blockingRay, blockingDistance, GroundMask);
+            if (!blockingHit) return;
+
+            Vector3 stepHeightPosition = MoveInput.normalized * (StepHeightForwardOffset + Radius) + transform.up * StepHeight + transform.position;
+            Ray stepRay = new Ray(stepHeightPosition, -transform.up);
+            float distance = StepHeight - StepHeightAllowance;
+            bool stepHit = Physics.Raycast(stepRay, out RaycastHit stepHitInfo, distance, GroundMask);
+            float groundNormalAngle = Vector3.Angle(GroundNormal, stepHitInfo.normal);
+            if(!stepHit) return;
+
+            float stepOffset = stepHitInfo.point.y - transform.position.y;
+            float stepVelocity = Mathf.Sqrt(2f * -Gravity * stepOffset);
+            Velocity = new Vector3(Velocity.x, stepVelocity, Velocity.z);
         }
 
         // gets move direction adjusted to avoid neighbors
@@ -313,6 +350,7 @@ namespace CharacterMovement
         {
             float landingCollisionMaxDistance = 0.25f;
             Vector3 point = collision.contacts[0].point;
+            if(Mathf.Abs(collision.relativeVelocity.y) < MinGroundedVelocity) return;
             if(Vector3.Distance(point, transform.position) < landingCollisionMaxDistance)
             {
                 OnGrounded.Invoke(collision.gameObject);
@@ -329,6 +367,13 @@ namespace CharacterMovement
                 Gizmos.color = Color.yellow;
                 Gizmos.DrawWireSphere(transform.position, NeighborDistance);
             }
+
+            // step height debug
+            Gizmos.color = Color.cyan;
+            Vector3 stepHeightPosition = MoveInput.normalized * (StepHeightForwardOffset + Radius) + transform.up * StepHeight + transform.position;
+            Ray stepRay = new Ray(stepHeightPosition, -transform.up);
+            float distance = StepHeight - StepHeightAllowance;
+            Gizmos.DrawRay(stepRay.origin, stepRay.direction * distance);
         }
     }
 }

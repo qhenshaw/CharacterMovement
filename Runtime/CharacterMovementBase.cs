@@ -36,6 +36,7 @@ namespace CharacterMovement
         [field: SerializeField] protected LayerMask GroundMask { get; set; } = 1 << 0;          // mask for layers considered the ground
 
         [field: Header("Events")]
+        [field: SerializeField] protected float MinGroundedVelocity { get; set; } = 5f;
         public UnityEvent<GameObject> OnGrounded;
         public UnityEvent<GameObject> OnFootstep;
 
@@ -63,6 +64,7 @@ namespace CharacterMovement
         public Vector3 LastGroundedPosition { get; protected set; }
 
         // methods
+        public virtual void TryJump() { }
         public virtual void Jump() { }
         public virtual void SetMoveInput(Vector3 input) { }
         public virtual void SetLookDirection(Vector3 direction) { }

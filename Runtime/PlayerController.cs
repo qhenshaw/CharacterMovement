@@ -36,7 +36,7 @@ namespace CharacterMovement
 
         public virtual void OnJump(InputValue value)
         {
-            Movement?.Jump();
+            Movement?.TryJump();
         }
 
         public virtual void OnFire(InputValue value)

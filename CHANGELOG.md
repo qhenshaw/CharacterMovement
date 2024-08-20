@@ -1,5 +1,9 @@
 # Changelog
 
+[3.1.0] - 2024-08-19
+- added step height for 3D movement
+- added min velocity for grounded event on 2D/3D movement
+
 [3.0.0] - 2024-07-05
 - fixed missing headers on new properties
 
