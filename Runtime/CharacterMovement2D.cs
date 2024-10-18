@@ -14,7 +14,11 @@ namespace CharacterMovement
         [field: SerializeField] protected Rigidbody2D Rigidbody;
         [field: SerializeField] protected CapsuleCollider2D CapsuleCollider;
 
+#if UNITY_6000_0_OR_NEWER
+        public override Vector3 Velocity { get => Rigidbody.linearVelocity; protected set => Rigidbody.linearVelocity = value; }
+#else
         public override Vector3 Velocity { get => Rigidbody.velocity; protected set => Rigidbody.velocity = value; }
+#endif
         protected Vector3 GroundCheckStart => transform.position + transform.up * GroundCheckOffset;
 
         protected virtual void OnValidate()
@@ -156,7 +160,11 @@ namespace CharacterMovement
             if (groundHit.collider == null) return false;
 
             // gets velocity of surface underneath character if applicable
+#if UNITY_6000_0_OR_NEWER
+            if (groundHit.rigidbody != null) SurfaceVelocity = groundHit.rigidbody.linearVelocity;
+#else
             if (groundHit.rigidbody != null) SurfaceVelocity = groundHit.rigidbody.velocity;
+#endif
 
             // test angle between character up and ground, angles above _maxSlopeAngle are invalid
             bool angleValid = Vector3.Angle(transform.up, groundHit.normal) < MaxSlopeAngle;

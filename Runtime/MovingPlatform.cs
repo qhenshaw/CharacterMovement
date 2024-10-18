@@ -45,7 +45,11 @@ namespace CharacterMovement
                 case PhysicsMode.Physics2D:
                     _rb2D = GetComponent<Rigidbody2D>();
                     if (_rb2D == null) _rb2D = gameObject.AddComponent<Rigidbody2D>();
+#if UNITY_6000_0_OR_NEWER
+                    _rb2D.bodyType = RigidbodyType2D.Kinematic;
+#else
                     _rb2D.isKinematic = true;
+#endif
                     _rb2D.interpolation = RigidbodyInterpolation2D.Interpolate;
                     break;
             }
@@ -73,7 +77,11 @@ namespace CharacterMovement
                     _rb3D.MovePosition(transform.position + velocity * Time.fixedDeltaTime);
                     break;
                 case PhysicsMode.Physics2D:
+#if UNITY_6000_0_OR_NEWER
+                    _rb2D.linearVelocity = velocity;
+#else
                     _rb2D.velocity = velocity;
+#endif
                     break;
             }
         }

@@ -39,7 +39,11 @@ namespace CharacterMovement
         [field: SerializeField] protected CapsuleCollider CapsuleCollider { get; set; }
 
         // useful properties
+#if UNITY_6000_0_OR_NEWER
+        public override Vector3 Velocity { get => Rigidbody.linearVelocity; protected set => Rigidbody.linearVelocity = value; }
+#else
         public override Vector3 Velocity { get => Rigidbody.velocity; protected set => Rigidbody.velocity = value; }
+#endif
         public float TurnSpeedMultiplier { get; set; } = 1f;
         protected Vector3 GroundCheckStart => transform.position + transform.up * GroundCheckOffset;
 
@@ -66,7 +70,11 @@ namespace CharacterMovement
         protected virtual void Awake()
         {
             // assign frictionless physic material
+#if UNITY_6000_0_OR_NEWER
+            CapsuleCollider.material = new PhysicsMaterial("NoFriction") { staticFriction = 0f, dynamicFriction = 0f, frictionCombine = PhysicsMaterialCombine.Minimum };
+#else
             CapsuleCollider.material = new PhysicMaterial("NoFriction") { staticFriction = 0f, dynamicFriction = 0f, frictionCombine = PhysicMaterialCombine.Minimum };
+#endif
 
             // disable NavMeshAgent movement
             NavMeshAgent.updatePosition = false;
@@ -252,7 +260,11 @@ namespace CharacterMovement
             if (!hit) return false;
 
             // gets velocity of surface underneath character if applicable
+#if UNITY_6000_0_OR_NEWER
+            if (hitInfo.rigidbody != null) SurfaceVelocity = hitInfo.rigidbody.linearVelocity;
+#else
             if (hitInfo.rigidbody != null) SurfaceVelocity = hitInfo.rigidbody.velocity;
+#endif
 
             // test angle between character up and ground, angles above _maxSlopeAngle are invalid
             bool angleValid = Vector3.Angle(transform.up, hitInfo.normal) < MaxSlopeAngle;

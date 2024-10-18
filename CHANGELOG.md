@@ -1,5 +1,8 @@
 # Changelog
 
+[3.2.0] - 2024-10-18
+- added support for Unity 6 + Cinemachine 3
+
 [3.1.0] - 2024-08-19
 - added step height for 3D movement
 - added min velocity for grounded event on 2D/3D movement

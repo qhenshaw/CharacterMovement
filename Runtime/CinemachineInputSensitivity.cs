@@ -1,4 +1,8 @@
+#if CINEMACHINE_3
+using Unity.Cinemachine;
+#else
 using Cinemachine;
+#endif
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
