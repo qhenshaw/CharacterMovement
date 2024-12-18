@@ -1,5 +1,9 @@
 # Changelog
 
+[3.2.1] - 2024-12-18
+- fixed GC alloc when following path
+- rewrote input sensitivity component, now requires Cinemachine 3.1.0
+
 [3.2.0] - 2024-10-18
 - added support for Unity 6 + Cinemachine 3
 
