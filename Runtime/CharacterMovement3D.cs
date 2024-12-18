@@ -133,7 +133,7 @@ namespace CharacterMovement
             Jump();
         }
 
-        public void Jump()
+        public override void Jump()
         {
             // calculate jump velocity from jump height and gravity
             float jumpVelocity = Mathf.Sqrt(2f * -Gravity * JumpHeight);
@@ -162,9 +162,9 @@ namespace CharacterMovement
             IsGrounded = CheckGrounded();
 
             // overrides current input with pathing direction if MoveTo has been called
-            if (NavMeshAgent.hasPath)
+            if (NavMeshAgent.hasPath && NavMeshAgent.pathStatus != NavMeshPathStatus.PathInvalid)
             {
-                Vector3 nextPathPoint = NavMeshAgent.path.corners[1];
+                Vector3 nextPathPoint = NavMeshAgent.steeringTarget;
                 Vector3 pathDir = (nextPathPoint - transform.position).normalized;
                 // override direction if avoidance is enabled
                 if(EnableAvoidance)
