@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using Random = UnityEngine.Random;
+using UnityEngine.Splines;
+using Unity.Mathematics;
 
 namespace CharacterMovement
 {
@@ -33,6 +33,11 @@ namespace CharacterMovement
         protected float _variationNoiseOffset;
         protected Collider[] _neighborHits;
 
+        [field: Header("Spline Contstraint")]
+        [field: SerializeField] public bool EnableSplineConstraint { get; set; }
+        [field: SerializeField] public SplineContainer SplineContainer { get; set; }
+        [field: SerializeField] public float SplineGravitation { get; set; } = 20f;
+
         [field: Header("Components")]
         [field: SerializeField] protected Rigidbody Rigidbody { get; set; }
         [field: SerializeField] protected NavMeshAgent NavMeshAgent { get; set; }
@@ -46,6 +51,9 @@ namespace CharacterMovement
 #endif
         public float TurnSpeedMultiplier { get; set; } = 1f;
         protected Vector3 GroundCheckStart => transform.position + transform.up * GroundCheckOffset;
+        public Vector3 SplineLookDirection { get; protected set; }
+        public bool HasPath => NavMeshAgent.hasPath;
+        public bool HasCompletePath => NavMeshAgent.hasPath && Vector3.Distance(NavMeshAgent.path.corners[NavMeshAgent.path.corners.Length - 1], NavMeshAgent.destination) < StoppingDistance;
 
         protected virtual void OnValidate()
         {
@@ -165,9 +173,12 @@ namespace CharacterMovement
             if (NavMeshAgent.hasPath && NavMeshAgent.pathStatus != NavMeshPathStatus.PathInvalid)
             {
                 Vector3 nextPathPoint = NavMeshAgent.steeringTarget;
+                Vector3 lastPathPoint = NavMeshAgent.path.corners[NavMeshAgent.path.corners.Length - 1];
+                float lastPointDistance = Vector3.Distance(lastPathPoint, transform.position);
+                bool pathEndReached = lastPointDistance < StoppingDistance;
                 Vector3 pathDir = (nextPathPoint - transform.position).normalized;
                 // override direction if avoidance is enabled
-                if(EnableAvoidance)
+                if (EnableAvoidance)
                 {
                     float neighborDistance = NeighborDistance;
                     if (NavMeshAgent.path.corners.Length > 2) neighborDistance = CornerNeighborDistance;
@@ -177,27 +188,58 @@ namespace CharacterMovement
                     {
                         Vector3 pathPoint = transform.position + pathDir * Speed * ClampLookAheadTime;
                         Vector3 clampedPathPoint = ClampToNavMesh(pathPoint, ClampSearchRadius);
-                        Debug.DrawLine(transform.position, pathPoint, Color.magenta);
                         pathDir = (clampedPathPoint - transform.position).normalized;
                     }
                 }
                 SetMoveInput(pathDir);
-                if(LookInMoveDirection) SetLookDirection(pathDir);
+                if (LookInMoveDirection) SetLookDirection(pathDir);
 
+                bool destinationReached = Vector3.Distance(NavMeshAgent.destination, transform.position) < StoppingDistance;
                 // stop off destination reached
-                if (StoppingDistance > 0f && Vector3.Distance(NavMeshAgent.destination, transform.position) < StoppingDistance)
+                if (pathEndReached || (StoppingDistance > 0f && destinationReached))
                 {
+                    SetLookPosition(NavMeshAgent.destination);
                     Stop();
                 }
             }
 
             // syncs navmeshagent position with character position
             NavMeshAgent.nextPosition = transform.position;
+            NavMeshAgent.Warp(transform.position);
 
             // find flattened movement vector based on ground normal
             Vector3 input = MoveInput;
             Vector3 right = Vector3.Cross(transform.up, input);
             Vector3 forward = Vector3.Cross(right, GroundNormal);
+
+            // move character along spline
+            if (EnableSplineConstraint && SplineContainer != null)
+            {
+                // spline closest point and tangent
+                Spline spline = SplineContainer.Spline;
+                Vector3 splineRelativePosition = SplineContainer.transform.InverseTransformPoint(transform.position);
+                SplineUtility.GetNearestPoint(spline, splineRelativePosition, out float3 nearest, out float t);
+                Vector3 splineWorldPosition = SplineContainer.transform.TransformPoint(nearest);
+                Vector3 splineTangent = SplineUtility.EvaluateTangent(spline, t);
+                splineTangent.y = 0f;
+                splineTangent.Normalize();
+
+                // float direction to closest point
+                Vector3 dirToSplineCenter = splineWorldPosition - transform.position;
+                dirToSplineCenter.y = 0f;
+                float splineFlatDistance = dirToSplineCenter.magnitude;
+                dirToSplineCenter.Normalize();
+
+                // force bringing character back to spline center
+                float gravitationDot = Vector3.Dot(splineTangent, dirToSplineCenter);
+                float gravitationCorrection = 1f - Math.Abs(gravitationDot);
+                float sideInput = Vector3.Dot(MoveInput, splineTangent);
+                Rigidbody.AddForce(gravitationCorrection * Mathf.Clamp01(splineFlatDistance) * SplineGravitation * dirToSplineCenter);
+
+                // correct movement direction along spline
+                forward = MoveInput.magnitude * sideInput * splineTangent;
+                SplineLookDirection = splineTangent * Mathf.Sign(sideInput);
+            }
 
             // vary character speed when using avoidance
             float speed = Speed;
@@ -230,11 +272,12 @@ namespace CharacterMovement
         protected virtual void Update()
         {
             // rotates character towards movement direction
-            if (ControlRotation && HasTurnInput && (IsGrounded || AirTurning))
+            if (ControlRotation && (HasTurnInput || !OnlyTurnWithInput) && (IsGrounded || AirTurning))
             {
                 Quaternion rotation = Rigidbody.rotation;
                 if(!Fix3DSpriteRotation)
                 {
+                    if (EnableSplineConstraint && HasMoveInput) LookDirection = SplineLookDirection;
                     Quaternion targetRotation = Quaternion.LookRotation(LookDirection);
                     rotation = Quaternion.Slerp(transform.rotation, targetRotation, TurnSpeed * TurnSpeedMultiplier * Time.deltaTime);
                 }   // rotate sprite character properly
@@ -244,6 +287,7 @@ namespace CharacterMovement
                     rotation = Quaternion.Euler(0f, spriteAngle, 0f);
                 }
                 Rigidbody.MoveRotation(rotation);
+                transform.rotation = rotation;
             }
         }
 

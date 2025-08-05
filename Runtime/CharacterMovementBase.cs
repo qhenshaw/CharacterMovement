@@ -12,6 +12,7 @@ namespace CharacterMovement
         [field: SerializeField] public float Speed { get; set; } = 5f;
         [field: SerializeField] public float Acceleration { get; set; } = 10f;
         [field: SerializeField] public float TurnSpeed { get; set; } = 15f;
+        [field: SerializeField] public bool OnlyTurnWithInput { get; set; } = true;
         [field: SerializeField] public float StoppingDistance { get; set; } = 0.25f;
         [field: SerializeField] public bool LookInMoveDirection { get; set; } = true;
         [field: SerializeField] public bool ControlRotation { get; set; } = true;       // character turns towards movement direction

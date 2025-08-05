@@ -1,5 +1,8 @@
 # Changelog
 
+[3.3.0] - 2025-08-05
+- added spline follow option to CharacterMovement3D
+
 [3.2.1] - 2024-12-18
 - fixed GC alloc when following path
 - rewrote input sensitivity component, now requires Cinemachine 3.1.0
