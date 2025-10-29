@@ -39,7 +39,7 @@ namespace CharacterMovement
         [field: Header("Events")]
         [field: SerializeField] protected float MinGroundedVelocity { get; set; } = 5f;
         public UnityEvent<GameObject> OnGrounded;
-        public UnityEvent<GameObject> OnFootstep;
+        public UnityEvent<RaycastHit, float> OnFootstep;
 
         // public properties
         public float MoveSpeedMultiplier { get; set; } = 1f;
@@ -57,6 +57,7 @@ namespace CharacterMovement
         public bool HasTurnInput { get; protected set; }
         public bool IsGrounded { get; protected set; }
         public GameObject SurfaceObject { get; protected set; }
+        public RaycastHit GroundHitInfo { get; protected set; }
         public Vector3 SurfaceVelocity { get; protected set; }
         public bool CanMove { get; set; } = true;
         public bool CanTurn { get; set; } = true;
@@ -72,7 +73,7 @@ namespace CharacterMovement
         public virtual void SetLookPosition(Vector3 position) { }
         public virtual void FootstepAnimEvent(AnimationEvent animationEvent)
         {
-            if (animationEvent.animatorClipInfo.weight > 0.5f && IsGrounded && NormalizedSpeed > 0.05f) OnFootstep.Invoke(SurfaceObject);
+            if (animationEvent.animatorClipInfo.weight > 0.5f && IsGrounded && NormalizedSpeed > 0.05f) OnFootstep.Invoke(GroundHitInfo, NormalizedSpeed);
         }
     }
 }

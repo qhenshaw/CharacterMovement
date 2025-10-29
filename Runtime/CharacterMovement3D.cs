@@ -301,7 +301,7 @@ namespace CharacterMovement
             GroundNormal = Vector3.up;
             SurfaceVelocity = Vector3.zero;
 
-            GroundCheckRaycastHitInfo = hitInfo;
+            GroundHitInfo = hitInfo;
 
             // if ground wasn't hit, character is not grounded
             if (!hit) return false;
