@@ -1,5 +1,8 @@
 # Changelog
 
+[3.3.1] - 2025-11-20
+- added path corners length check before beginning navigation
+
 [3.3.0] - 2025-08-05
 - added spline follow option to CharacterMovement3D
 

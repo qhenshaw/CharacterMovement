@@ -170,7 +170,7 @@ namespace CharacterMovement
             IsGrounded = CheckGrounded();
 
             // overrides current input with pathing direction if MoveTo has been called
-            if (NavMeshAgent.hasPath && NavMeshAgent.pathStatus != NavMeshPathStatus.PathInvalid)
+            if (NavMeshAgent.hasPath && NavMeshAgent.pathStatus != NavMeshPathStatus.PathInvalid && NavMeshAgent.path.corners.Length >= 2)
             {
                 Vector3 nextPathPoint = NavMeshAgent.steeringTarget;
                 Vector3 lastPathPoint = NavMeshAgent.path.corners[NavMeshAgent.path.corners.Length - 1];
