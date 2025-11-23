@@ -54,6 +54,7 @@ namespace CharacterMovement
         public Vector3 SplineLookDirection { get; protected set; }
         public bool HasPath => NavMeshAgent.hasPath;
         public bool HasCompletePath => NavMeshAgent.hasPath && Vector3.Distance(NavMeshAgent.path.corners[NavMeshAgent.path.corners.Length - 1], NavMeshAgent.destination) < StoppingDistance;
+        public RaycastHit GroundCheckRaycastHitInfo;
 
         protected virtual void OnValidate()
         {
@@ -299,6 +300,8 @@ namespace CharacterMovement
             // set default ground surface normal and SurfaceVelocity
             GroundNormal = Vector3.up;
             SurfaceVelocity = Vector3.zero;
+
+            GroundHitInfo = hitInfo;
 
             // if ground wasn't hit, character is not grounded
             if (!hit) return false;
